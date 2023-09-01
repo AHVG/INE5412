@@ -1,3 +1,6 @@
+
+// Refazer isso aqui
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -72,11 +75,3 @@ private:
 	ifstream myfile; 
 	vector<ProcessParams *> processes;
 };
-
-int main()
-{
-	File f;
-	f.read_file();
-	f.print_processes_params();
-}
-
