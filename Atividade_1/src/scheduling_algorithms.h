@@ -21,7 +21,8 @@ public:
         std::sort(processes.begin(), processes.end(), compareByPriority);
         return processes;
     }
-
+    
+private:
     bool compareByDuration(const Process& a, const Process& b) {
         return a.getDuration() < b.getDuration();
     }
