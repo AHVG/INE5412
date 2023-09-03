@@ -54,6 +54,10 @@ public:
         return timeRunningCurrentProcess == processDurationTime;
     }
 
+    int empty() {
+        return !process;
+    }
+
 };
 
 #endif

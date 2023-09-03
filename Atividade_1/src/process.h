@@ -17,11 +17,11 @@ private:
     int priority;
     State currentState;
     int executedTime;
-    Context context;
+    Context *context;
 
 public:
 
-    Process(int _id, int _start, int _duration, int _priority){
+    Process(int _id, int _start, int _duration, int _priority) {
         id = _id;
         
         start = _start;
@@ -32,11 +32,10 @@ public:
         currentState = NOVO;
         executedTime = 0;
 
+        context = nullptr;
     };
 
-    ~Process(){
-
-    };
+    ~Process() {};
 
     int getId() const { return id; };
     int getStart() const { return start; };

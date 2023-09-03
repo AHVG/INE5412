@@ -16,6 +16,7 @@ private:
     std::vector<Process *> readyProcesses;
     std::vector<Process *> executedProcesses;
     CPU cpu;
+    int clock;
 
 public:
     Kernel() {};
@@ -37,12 +38,22 @@ public:
 
         std::cout << std::endl;
 
+        updateReadyProcesses();
+        clock = 0;
     }; // Criará os processos e etc
 
     int run() { 
-        int clock = 0;
-        while (!processes.empty() && !readyProcesses.empty()) {
-            
+        while (!processes.empty() || !readyProcesses.empty()) {
+            std::cout << "Aqui" << std::endl;
+            if (cpu.empty() && !readyProcesses.empty()) {
+                // TODO: Arrumar para o escalonador
+                Process *p = readyProcesses.at(0);
+                readyProcesses.erase(readyProcesses.begin());
+                int duration = p->getDuration() - p->getExecutedTime();
+
+                cpu.loadProcess(p, duration);
+            }
+
             cpu.execute(1);
 
             std::cout << clock << "-" << clock + 1 << ": " << cpu.getProcess() << std::endl;
@@ -61,12 +72,7 @@ public:
                 cpu.loadProcess(p, duration);
             }
 
-            for (auto process : processes) {
-                if (process->getStart() == clock + 1) {
-                    readyProcesses.push_back(process);
-                    
-                }
-            }
+            updateReadyProcesses();
             clock++;
         }
         return 1;
@@ -76,6 +82,15 @@ public:
         std::cout << "Encerrando kernel...\n\n";
         for (long unsigned int i = 0; i < executedProcesses.size(); i++) delete executedProcesses[i];
     }; // Destrói tudo que foi criado
+
+    void updateReadyProcesses() {
+        for (auto itProcess = processes.begin(); itProcess != processes.end(); itProcess++) {
+            if ((*itProcess)->getStart() == clock + 1) {
+                readyProcesses.push_back(*itProcess);
+                processes.erase(itProcess);
+            }
+        }
+    }
 };
 
 #endif
