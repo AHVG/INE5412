@@ -43,7 +43,9 @@ public:
         updateReadyProcesses();
     }; // Criará os processos e etc
 
-    int run() { 
+    void run() { 
+        std::cout << "Executando os processo...\n\n";
+
         while (!processes.empty() || !readyProcesses.empty() || !cpu.empty()) {
             if (cpu.empty() && !readyProcesses.empty()) {
                 // TODO: Arrumar para o escalonador
@@ -61,8 +63,6 @@ public:
             if (cpu.finishExecuting()) {
                 std::cout << "Trocando contexto..." << std::endl;
                 Process *p = cpu.unloadProcess();
-
-                for (auto process : readyProcesses) std::cout << *process << std::endl;
 
                 if (p->getCurrentState() == PRONTO) readyProcesses.push_back(p);
                 else executedProcesses.push_back(p);
@@ -82,7 +82,7 @@ public:
             if (clock > 20)
                 break;
         }
-        return 1;
+        std::cout << std::endl;
     }; // Executa os processo
     
     void close() {

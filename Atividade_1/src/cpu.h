@@ -50,7 +50,6 @@ public:
             process->setExecutedTime(process->getExecutedTime() + dt);
         }
         runningTime += dt;
-        std::cout << "Tempo já executando o processo: " << timeRunningCurrentProcess << std::endl;
     };
 
     int finishExecuting() {
