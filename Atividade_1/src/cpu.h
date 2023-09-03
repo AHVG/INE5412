@@ -1,19 +1,29 @@
 #ifndef _H_CPU
 #define _H_CPU
 
-#include <process.h>
+#include "process.h"
 
 
 class CPU {
 
-    private:
+private:
 
-    public:
+    Process *process;
+
+public:
 
     CPU(){};
     ~CPU(){};
 
-    Process *execute(Process *p){
+    void loadProcess(Process *p) {
+
+    }
+
+    Process *unloadProcess() {
+
+    }
+
+    void execute(){
         
         // TODO processamento
 
