@@ -44,7 +44,6 @@ public:
     };
 
     void execute(int dt){
-        // TODO processamento
         if (process) {
             timeRunningCurrentProcess += dt;
             process->setExecutedTime(process->getExecutedTime() + dt);

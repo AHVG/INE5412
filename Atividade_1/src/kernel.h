@@ -76,6 +76,7 @@ public:
                     cpu.loadProcess(p, duration);
                 }
             }
+
             clock++;
             updateReadyProcesses();
 

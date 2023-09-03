@@ -2,6 +2,7 @@
 #define _H_SCHEDULER
 
 #include "scheduling_algorithm.h"
+#include "cpu.h"
 
 class Scheduler {
 
@@ -13,6 +14,10 @@ class Scheduler {
 
     Scheduler() {};
     ~Scheduler() {};
+
+    Process *getNextProcess() {
+        return nullptr;
+    }
 
 };
 
