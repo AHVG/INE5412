@@ -18,17 +18,27 @@ public:
     ~Kernel() {};
 
     void initialize() {
-        std::cout << "Inicializando kernel..." << std::endl;
+        // TODO: Verificar se os objetos retornados são desalocados
+        std::cout << "Inicializando kernel...\n\n";
+        
+        std::cout << "Lendo arquivo...\n";
         std::vector<std::string> lines = reader.read("../entrada/entrada.txt");
-        // for (long unsigned int i = 0; i < lines.size(); i++) std::cout << lines[i] << std::endl;
+        for (long unsigned int i = 0; i < lines.size(); i++) std::cout << lines[i] << std::endl;
+
+        std::cout << std::endl;
+        
+        std::cout << "Criando processos...\n";
         processes = factory.createProcesses(lines);
         for (long unsigned int i = 0; i < processes.size(); i++) std::cout << *processes[i] << std::endl;
+
+        std::cout << std::endl;
 
     };    // Criará os processos e etc
 
     int run() { return 1; }; // Executa os processo
     
     void close() {
+        std::cout << "Encerrando kernel...\n\n";
         for (long unsigned int i = 0; i < processes.size(); i++) delete processes[i];
     };         // Destrói tudo que foi criado
 };

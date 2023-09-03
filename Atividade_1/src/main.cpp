@@ -3,7 +3,7 @@
 
 int main() {
 
-    std::cout << "Simulador de algoritmos de escalonamento" << std::endl;
+    std::cout << "Simulador de algoritmos de escalonamento\n\n";
 
     Kernel kernel;
     kernel.initialize();

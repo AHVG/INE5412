@@ -46,7 +46,7 @@ public:
 
 
 	friend std::ostream &operator<<(std::ostream& os, const Process& p) {
-		os << "ID: " << p.getId() << ", Start: " << p.getStart() << ", Duration: " << p.getDuration() << ", Priority: " << p.getPriority() << std::endl;
+		os << "ID: " << p.getId() << ", Start: " << p.getStart() << ", Duration: " << p.getDuration() << ", Priority: " << p.getPriority();
 		return os;
 	}
 

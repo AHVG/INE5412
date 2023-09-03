@@ -23,7 +23,7 @@ public:
         std::vector<Process *> processes;
         
         for(long unsigned int i = 0; i < lines.size(); i++) {
-            processes.push_back(createProcess(i + 1, lines[i][0] - '0', lines[i][1]-'0', lines[i][2]-'0'));
+            processes.push_back(createProcess(i + 1, lines[i][0] - '0', lines[i][1] - '0', lines[i][2] - '0'));
         }
         return processes;
     };
