@@ -93,7 +93,9 @@ public:
     void updateReadyProcesses() {
         int c = clock;
         std::copy_if(processes.begin(), processes.end(), std::back_inserter(readyProcesses), [c](Process *p) {
-            return p->getStart() == c;
+            int result = p->getStart() == c;
+            if (result) p->setCurrentState(PRONTO);
+            return result;
         });
 
         auto newEnd = std::remove_if(processes.begin(), processes.end(), [c](Process *p) {

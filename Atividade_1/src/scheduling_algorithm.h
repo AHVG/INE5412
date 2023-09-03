@@ -5,24 +5,32 @@
 
 #include <vector>
 #include "process.h"
-#include "algorithm"
-class SchedulingAlgorithms{
+#include <algorithm>
+
+class SchedulingAlgorithm {
+
 public:
-    SchedulingAlgorithms(){};
-    ~SchedulingAlgorithms(){};
+    
+    SchedulingAlgorithm() {};
+    
+    ~SchedulingAlgorithm() {};
+    
     std::vector<Process *> FCFS(std::vector<Process *> processes){
         return processes;
     }
+
     std::vector<Process *> SJF(std::vector<Process *> processes){
         std::sort(processes.begin(), processes.end(), compareByDuration);
         return processes;
     }
+
     std::vector<Process *> priority(std::vector<Process *> processes){
         std::sort(processes.begin(), processes.end(), compareByPriority);
         return processes;
     }
     
 private:
+
     bool compareByDuration(const Process& a, const Process& b) {
         return a.getDuration() < b.getDuration();
     }

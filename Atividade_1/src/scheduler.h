@@ -11,8 +11,8 @@ class Scheduler {
 
     public:
 
-    Scheduler(){};
-    ~Scheduler(){};
+    Scheduler() {};
+    ~Scheduler() {};
 
 };
 
