@@ -1,21 +1,17 @@
-
-// TODO Colocar as diretivas para evitar import circular
+#ifndef _H_KERNEL
+#define _H_KERNEL
 // TOOD Colocar os imports
 
 class Kernel {
 
-    private:
+private:
+public:
+  Kernel() {}
+  ~Kernel() {}
 
-    CPU cpu;
-    Scheduler scheduler;
+  void initialize() {}    // Criará os processos e etc
+  int run() { return 1; } // Executa os processo
+  void close() {}         // Destrói tudo que foi criado
+};
 
-    public:
-
-    Kernel();
-    ~Kernel();
-
-    void initialize();  // Criará os processos e etc
-    int run();          // Executa os processo
-    void close();       // Destrói tudo que foi criado
-
-}
+#endif
