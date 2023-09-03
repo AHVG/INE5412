@@ -64,8 +64,12 @@ public:
                 std::cout << "Trocando contexto..." << std::endl;
                 Process *p = cpu.unloadProcess();
 
-                if (p->getCurrentState() == PRONTO) readyProcesses.push_back(p);
-                else executedProcesses.push_back(p);
+                if (p->getCurrentState() == PRONTO) {
+                    readyProcesses.push_back(p);
+                } else {
+                    executedProcesses.push_back(p);
+                    p->setEnd(clock);
+                }
 
                 if (!readyProcesses.empty()) {
                     // TODO: Arrumar para o escalonador
