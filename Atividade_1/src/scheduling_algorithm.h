@@ -1,6 +1,5 @@
-
-// TODO Colocar as diretivas para evitar import circular
-// TOOD Colocar os imports
+#ifndef _H_SCHEDULING_ALGORITHM
+#define _H_SCHEDULING_ALGORITHM
 
 class SchedulingAlgorithm {
 
@@ -10,4 +9,6 @@ class SchedulingAlgorithm {
     public:
 
 
-}
+};
+
+#endif

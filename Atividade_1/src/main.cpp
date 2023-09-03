@@ -3,11 +3,12 @@
 
 int main() {
 
-  stc::cout << "Simulador de algoritmos de escalonamento" << std::endl;
+    std::cout << "Simulador de algoritmos de escalonamento" << std::endl;
 
-  Kernel kernel;
-  kernel.run();
-  kernel.close();
+    Kernel kernel;
+    kernel.initialize();
+    kernel.run();
+    kernel.close();
 
-  return 0;
+    return 0;
 }

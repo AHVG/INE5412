@@ -2,10 +2,12 @@
 all: atividade_1
 
 atividade_1: main.o
-    g++ -o main main.o
+	g++ -o main main.o
 
 main.o: main.cpp kernel.h
-    g++ -o main.o main.cpp -c -W -Wall -ansi -pedantic
+	g++ -o main.o main.cpp -c -W -Wall -ansi -pedantic
+
+kernel.h: file_reader.h
 
 clean:
-    rm -rf *.o *~ atividade_1
+	rm -rf *.o *~ atividade_1
