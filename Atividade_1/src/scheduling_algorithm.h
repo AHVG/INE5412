@@ -15,6 +15,8 @@ public:
     
     ~SchedulingAlgorithm() {};
     
+    std::vector<Process *> schedule(std::vector<Process *> processes) virtual=0;
+
     std::vector<Process *> FCFS(std::vector<Process *> processes){
         return processes;
     }
