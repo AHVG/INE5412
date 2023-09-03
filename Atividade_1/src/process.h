@@ -1,6 +1,8 @@
 #ifndef _H_PROCESS
 #define _H_PROCESS
 
+#include <iostream>
+
 
 enum State {NOVO, PRONTO, EXECUTANDO, TERMINADO};
 
@@ -12,8 +14,8 @@ private:
     int start, end;
     int duration;
     int priority;
-    State current_state;
-    int executed_time;
+    State currentState;
+    int executedTime;
 
 public:
 
@@ -25,8 +27,8 @@ public:
         priority = _priority;
 
         end = -1;
-        current_state = NOVO;
-        executed_time = 0;
+        currentState = NOVO;
+        executedTime = 0;
 
     };
 
@@ -34,6 +36,19 @@ public:
 
     };
 
+    int getId() const { return id; };
+    int getStart() const { return start; };
+    int getEnd() const { return end; };
+    int getDuration() const { return duration; };
+    int getPriority() const { return priority; };
+    State getCurrentState() const { return currentState; };
+    int getExecutedTime() const { return executedTime; };
+
+
+	friend std::ostream &operator<<(std::ostream& os, const Process& p) {
+		os << "ID: " << p.getId() << ", Start: " << p.getStart() << ", Duration: " << p.getDuration() << ", Priority: " << p.getPriority() << std::endl;
+		return os;
+	}
 
 };
 
