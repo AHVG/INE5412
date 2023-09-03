@@ -1,0 +1,4 @@
+class ProcessFactory{
+    ProcessFactory(){};
+    ~ProcessFactory(){};
+};

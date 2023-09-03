@@ -1,16 +1,16 @@
 
 // TODO Colocar as diretivas para evitar import circular
 // TOOD Colocar os imports
-
+#include <process.h>
 class CPU {
 
     private:
 
     public:
 
-    CPU();
-    ~CPU();
+    CPU(){};
+    ~CPU(){};
 
-    Process *execute(Process *p);
+    Process *execute(Process *p){};
 
-}
+};

@@ -1,6 +1,8 @@
 
 // TODO Colocar as diretivas para evitar import circular
 // TOOD Colocar os imports
+#include <cpu.h>
+#include <scheduler.h>
 
 class Kernel {
 
@@ -11,11 +13,11 @@ class Kernel {
 
     public:
 
-    Kernel();
-    ~Kernel();
+    Kernel(){};
+    ~Kernel(){};
 
-    void initialize();  // Criará os processos e etc
-    int run();          // Executa os processo
-    void close();       // Destrói tudo que foi criado
+    void initialize(){};  // Criará os processos e etc
+    int run(){};          // Executa os processo
+    void close(){};       // Destrói tudo que foi criado
 
-}
+};

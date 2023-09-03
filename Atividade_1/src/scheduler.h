@@ -1,6 +1,7 @@
 
 // TODO Colocar as diretivas para evitar import circular
 // TOOD Colocar os imports
+#include <scheduling_algorithm.h>
 
 class Scheduler {
 
@@ -10,7 +11,7 @@ class Scheduler {
 
     public:
 
-    Scheduler();
-    ~Scheduler();
+    Scheduler(){};
+    ~Scheduler(){};
 
-}
+};

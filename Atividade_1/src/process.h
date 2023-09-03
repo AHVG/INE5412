@@ -8,8 +8,8 @@ class Process {
 
     public:
 
-    Process();
-    ~Process();
+    Process(){};
+    ~Process(){};
 
 
-}
+};
