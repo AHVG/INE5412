@@ -56,7 +56,7 @@ public:
     int finished() const { return getDuration() == getExecutedTime(); }
 
 	friend std::ostream &operator<<(std::ostream& os, const Process& p) {
-		os << "ID: " << p.getId() << ", Start: " << p.getStart() << ", Duration: " << p.getDuration() << ", Priority: " << p.getPriority();
+		os << "ID: " << p.getId() << ", Start: " << p.getStart() << ", Duration: " << p.getDuration() << ", Priority: " << p.getPriority() << ", Tempo executando: " << p.getExecutedTime();
 		return os;
 	}
 
