@@ -15,30 +15,23 @@ public:
     
     ~SchedulingAlgorithm() {};
     
-    std::vector<Process *> schedule(std::vector<Process *> processes) virtual=0;
-
-    std::vector<Process *> FCFS(std::vector<Process *> processes){
+    virtual std::vector<Process *> schedule(std::vector<Process *> processes) = 0;
+};
+class FCFS: public SchedulingAlgorithm{
+    std::vector<Process *> schedule(std::vector<Process *> processes) override{
+        return processes;
+    };
+};
+class SJF: public SchedulingAlgorithm{
+    std::vector<Process *> schedule(std::vector<Process *> processes) override{
+        std::sort(processes.begin(), processes.end(), [](const Process& a, const Process& b) -> bool {return a.getDuration() < b.getDuration();});
         return processes;
     }
-
-    std::vector<Process *> SJF(std::vector<Process *> processes){
-        std::sort(processes.begin(), processes.end(), compareByDuration);
+};
+class Priority: public SchedulingAlgorithm{
+    std::vector<Process *> schedule(std::vector<Process *> processes) override{
+        std::sort(processes.begin(), processes.end(), [](const Process& a, const Process& b) -> bool {return a.getPriority() > b.getPriority();});
         return processes;
-    }
-
-    std::vector<Process *> priority(std::vector<Process *> processes){
-        std::sort(processes.begin(), processes.end(), compareByPriority);
-        return processes;
-    }
-    
-private:
-
-    bool compareByDuration(const Process& a, const Process& b) {
-        return a.getDuration() < b.getDuration();
-    }
-
-    bool compareByPriority(const Process& a, const Process& b) {
-        return a.getPriority() > b.getPriority();
     }
 };
 
