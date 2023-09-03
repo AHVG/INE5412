@@ -12,16 +12,16 @@ private:
 
 public:
 
-    CPU(){};
-    ~CPU(){};
+    CPU() {};
+    ~CPU() {};
 
-    void loadProcess(Process *p) {
+    void loadProcess(Process *p, int execution_duration) {
 
-    }
+    };
 
     Process *unloadProcess() {
 
-    }
+    };
 
     void execute(){
         

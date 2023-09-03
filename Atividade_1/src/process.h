@@ -52,7 +52,6 @@ public:
     void setCurrentState(State _currentState) { currentState = _currentState; };
     void setExecutedTime(int _executedTime) { executedTime = _executedTime; };
 
-
 	friend std::ostream &operator<<(std::ostream& os, const Process& p) {
 		os << "ID: " << p.getId() << ", Start: " << p.getStart() << ", Duration: " << p.getDuration() << ", Priority: " << p.getPriority();
 		return os;

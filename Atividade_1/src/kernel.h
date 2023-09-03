@@ -35,16 +35,13 @@ public:
 
         std::cout << std::endl;
 
-    };    // Criará os processos e etc
+    }; // Criará os processos e etc
 
     int run() { 
+        int clock = 0;
+        while (1) {
 
-        while(!processes.empty() && !ready_processes.empty()) {
-            // Organizar a lista de acordo com o algoritmo
-            // Obter o próximo processo
-            // Executá-lo
-            // Verificar se ele terminou de se executado
-
+            clock++;
         }
         return 1;
     }; // Executa os processo
@@ -52,7 +49,7 @@ public:
     void close() {
         std::cout << "Encerrando kernel...\n\n";
         for (long unsigned int i = 0; i < processes.size(); i++) delete processes[i];
-    };         // Destrói tudo que foi criado
+    }; // Destrói tudo que foi criado
 };
 
 #endif
