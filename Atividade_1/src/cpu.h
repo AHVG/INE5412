@@ -2,6 +2,7 @@
 #define _H_CPU
 
 #include "process.h"
+#include "context.h"
 
 
 class CPU {
