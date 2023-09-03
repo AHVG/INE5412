@@ -21,9 +21,9 @@ public:
 
     std::vector<Process *> createProcesses(std::vector<std::string> lines){
         std::vector<Process *> processes;
+        
         for(long unsigned int i = 0; i < lines.size(); i++) {
-            std::cout << lines[i] << std::endl;
-            processes.push_back(createProcess(i + 1, lines[i][0], lines[i][1], lines[i][2]));
+            processes.push_back(createProcess(i + 1, lines[i][0] - '0', lines[i][1]-'0', lines[i][2]-'0'));
         }
         return processes;
     };
