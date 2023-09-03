@@ -1,5 +1,5 @@
 
-all: atividade_1
+all: clean atividade_1
 
 atividade_1: main.o
 	g++ -o main main.o

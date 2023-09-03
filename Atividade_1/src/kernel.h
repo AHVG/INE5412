@@ -12,6 +12,8 @@ private:
     FileReader reader;
     ProcessFactory factory;
     std::vector<Process *> processes;
+    std::vector<Process *> ready_processes;
+    std::vector<Process *> executed_processes;
 
 public:
     Kernel() {};
@@ -35,7 +37,17 @@ public:
 
     };    // Criará os processos e etc
 
-    int run() { return 1; }; // Executa os processo
+    int run() { 
+
+        while(!processes.empty() && !ready_processes.empty()) {
+            // Organizar a lista de acordo com o algoritmo
+            // Obter o próximo processo
+            // Executá-lo
+            // Verificar se ele terminou de se executado
+
+        }
+        return 1;
+    }; // Executa os processo
     
     void close() {
         std::cout << "Encerrando kernel...\n\n";

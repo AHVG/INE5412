@@ -44,6 +44,14 @@ public:
     State getCurrentState() const { return currentState; };
     int getExecutedTime() const { return executedTime; };
 
+    void setId(int _id) { id = _id; };
+    void setStart(int _start) { start = _start; };
+    void setEnd(int _end) { end = _end; };
+    void setDuration(int _duration) { duration = _duration; };
+    void setPriority(int _priority) { priority = _priority; };
+    void setCurrentState(State _currentState) { currentState = _currentState; };
+    void setExecutedTime(int _executedTime) { executedTime = _executedTime; };
+
 
 	friend std::ostream &operator<<(std::ostream& os, const Process& p) {
 		os << "ID: " << p.getId() << ", Start: " << p.getStart() << ", Duration: " << p.getDuration() << ", Priority: " << p.getPriority();
