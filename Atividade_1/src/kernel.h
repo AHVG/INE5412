@@ -1,6 +1,7 @@
 #ifndef _H_KERNEL
 #define _H_KERNEL
 
+#include <algorithm>
 #include "file_reader.h"
 #include "process_factory.h"
 #include "process.h"
@@ -38,13 +39,12 @@ public:
 
         std::cout << std::endl;
 
-        updateReadyProcesses();
         clock = 0;
+        updateReadyProcesses();
     }; // Criará os processos e etc
 
     int run() { 
-        while (!processes.empty() || !readyProcesses.empty()) {
-            std::cout << "Aqui" << std::endl;
+        while (!processes.empty() || !readyProcesses.empty() || !cpu.empty()) {
             if (cpu.empty() && !readyProcesses.empty()) {
                 // TODO: Arrumar para o escalonador
                 Process *p = readyProcesses.at(0);
@@ -56,24 +56,31 @@ public:
 
             cpu.execute(1);
 
-            std::cout << clock << "-" << clock + 1 << ": " << cpu.getProcess() << std::endl;
+            std::cout << clock << "-" << clock + 1 << ": " << *cpu.getProcess() << std::endl;
 
             if (cpu.finishExecuting()) {
+                std::cout << "Trocando contexto..." << std::endl;
                 Process *p = cpu.unloadProcess();
+
+                for (auto process : readyProcesses) std::cout << *process << std::endl;
 
                 if (p->getCurrentState() == PRONTO) readyProcesses.push_back(p);
                 else executedProcesses.push_back(p);
 
-                // TODO: Arrumar para o escalonador
-                p = readyProcesses.at(0);
-                readyProcesses.erase(readyProcesses.begin());
-                int duration = p->getDuration() - p->getExecutedTime();
+                if (!readyProcesses.empty()) {
+                    // TODO: Arrumar para o escalonador
+                    p = readyProcesses.at(0);
+                    readyProcesses.erase(readyProcesses.begin());
+                    int duration = p->getDuration() - p->getExecutedTime();
 
-                cpu.loadProcess(p, duration);
+                    cpu.loadProcess(p, duration);
+                }
             }
-
-            updateReadyProcesses();
             clock++;
+            updateReadyProcesses();
+
+            if (clock > 20)
+                break;
         }
         return 1;
     }; // Executa os processo
@@ -84,12 +91,17 @@ public:
     }; // Destrói tudo que foi criado
 
     void updateReadyProcesses() {
-        for (auto itProcess = processes.begin(); itProcess != processes.end(); itProcess++) {
-            if ((*itProcess)->getStart() == clock + 1) {
-                readyProcesses.push_back(*itProcess);
-                processes.erase(itProcess);
-            }
-        }
+        int c = clock;
+        std::copy_if(processes.begin(), processes.end(), std::back_inserter(readyProcesses), [c](Process *p) {
+            return p->getStart() == c;
+        });
+
+        auto newEnd = std::remove_if(processes.begin(), processes.end(), [c](Process *p) {
+            return p->getStart() == c;
+        });
+
+        // Redimensione o vetor para o novo tamanho após a filtragem
+        processes.resize(std::distance(processes.begin(), newEnd));
     }
 };
 

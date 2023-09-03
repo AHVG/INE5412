@@ -35,6 +35,7 @@ public:
     };
 
     Process *unloadProcess() {
+        timeRunningCurrentProcess = 0;
         if (process->finished()) process->setCurrentState(TERMINADO);
         else process->setCurrentState(PRONTO);
         Process *aux = process;
@@ -46,8 +47,10 @@ public:
         // TODO processamento
         if (process) {
             timeRunningCurrentProcess += dt;
+            process->setExecutedTime(process->getExecutedTime() + dt);
         }
         runningTime += dt;
+        std::cout << "Tempo já executando o processo: " << timeRunningCurrentProcess << std::endl;
     };
 
     int finishExecuting() {
