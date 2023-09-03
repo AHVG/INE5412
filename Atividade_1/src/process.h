@@ -2,6 +2,7 @@
 #define _H_PROCESS
 
 #include <iostream>
+#include "context.h"
 
 
 enum State {NOVO, PRONTO, EXECUTANDO, TERMINADO};
@@ -16,6 +17,7 @@ private:
     int priority;
     State currentState;
     int executedTime;
+    Context context;
 
 public:
 
@@ -51,6 +53,8 @@ public:
     void setPriority(int _priority) { priority = _priority; };
     void setCurrentState(State _currentState) { currentState = _currentState; };
     void setExecutedTime(int _executedTime) { executedTime = _executedTime; };
+
+    int finished() const { return getDuration() == getExecutedTime(); }
 
 	friend std::ostream &operator<<(std::ostream& os, const Process& p) {
 		os << "ID: " << p.getId() << ", Start: " << p.getStart() << ", Duration: " << p.getDuration() << ", Priority: " << p.getPriority();

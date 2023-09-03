@@ -2,7 +2,6 @@
 #define _H_CPU
 
 #include "process.h"
-#include "context.h"
 
 
 class CPU {
@@ -10,25 +9,50 @@ class CPU {
 private:
 
     Process *process;
+    int runningTime;
+    int timeRunningCurrentProcess;
+    int processDurationTime;
 
 public:
 
-    CPU() {};
+    CPU() {
+        process = nullptr;
+        runningTime = 0;
+        timeRunningCurrentProcess = 0;
+        processDurationTime = 0;
+    };
     ~CPU() {};
 
-    void loadProcess(Process *p, int execution_duration) {
+    Process *getProcess() const { return process; };
+    int getRunningTime() const { return runningTime; };
+    int getTimeRunningCurrentProcess() const { return timeRunningCurrentProcess; };
+    int getProcessDurationTime() const { return processDurationTime; };
 
+    void loadProcess(Process *p, int executionDuration) {
+        process = p;
+        processDurationTime = executionDuration;
+        process->setCurrentState(EXECUTANDO);
     };
 
     Process *unloadProcess() {
-
+        if (process->finished()) process->setCurrentState(TERMINADO);
+        else process->setCurrentState(PRONTO);
+        Process *aux = process;
+        process = nullptr;
+        return aux;
     };
 
-    void execute(){
-        
+    void execute(int dt){
         // TODO processamento
-
+        if (process) {
+            timeRunningCurrentProcess += dt;
+        }
+        runningTime += dt;
     };
+
+    int finishExecuting() {
+        return timeRunningCurrentProcess == processDurationTime;
+    }
 
 };
 
