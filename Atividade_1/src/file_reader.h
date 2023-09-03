@@ -16,14 +16,16 @@ public:
 	~FileReader() {}
 	
 	std::vector<std::string> read(std::string path) {
+		std::vector<std::string> lines;
 		std::ifstream file; 
 		file.open(path.c_str());
 	
 		if (!file.is_open()) std::cout << "Erro ao abrir o arquivo!\n";
 		
-		int a, b, c;
-		while (file >> a >> b >> c) std::cout << a << b << c << std::endl;
+		std::string a, b, c;
+		while (file >> a >> b >> c) lines.push_back(a + b + c);
 
+		return lines;
 	}
 
 };

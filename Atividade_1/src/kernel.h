@@ -3,27 +3,31 @@
 
 #include "file_reader.h"
 #include "process_factory.h"
-
+#include "process.h"
 
 class Kernel {
 
 private:
+
+    FileReader reader;
+    ProcessFactory factory;
+    std::vector<Process *> processes;
+
 public:
-    Kernel() {}
-    ~Kernel() {}
+    Kernel() {};
+    ~Kernel() {};
 
     void initialize() {
         std::cout << "Inicializando kernel..." << std::endl;
-        
-        FileReader reader;
         std::vector<std::string> lines = reader.read("../entrada/entrada.txt");
+        for (long unsigned int i = 0; i < lines.size(); i++) std::cout << lines[i] << std::endl;
+        // processes = factory.createProcesses(lines);
 
-        ProcessFactory factory;
-        std::vector<Process *> process = 
+    };    // Criará os processos e etc
 
-    }    // Criará os processos e etc
-    int run() { return 1; } // Executa os processo
-    void close() {}         // Destrói tudo que foi criado
+    int run() { return 1; }; // Executa os processo
+    
+    void close() {};         // Destrói tudo que foi criado
 };
 
 #endif

@@ -3,9 +3,13 @@
 
 class ProcessFactory {
 
+private:
+
+public:
     ProcessFactory(){};
+
     ~ProcessFactory(){};
-    
+
 };
 
 #endif
