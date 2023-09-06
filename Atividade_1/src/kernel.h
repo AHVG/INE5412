@@ -2,21 +2,27 @@
 #define _H_KERNEL
 
 #include <algorithm>
-#include "file_reader.h"
+
 #include "process_factory.h"
+#include "file_reader.h"
+#include "scheduler.h"
 #include "process.h"
 #include "cpu.h"
+
 
 class Kernel {
 
 private:
 
-    FileReader reader;
-    ProcessFactory factory;
-    std::vector<Process *> processes;
-    std::vector<Process *> readyProcesses;
     std::vector<Process *> executedProcesses;
+    std::vector<Process *> readyProcesses;
+    std::vector<Process *> processes;
+    
+    ProcessFactory factory;
+    Scheduler scheduler;
+    FileReader reader;
     CPU cpu;
+    
     int clock;
 
 public:
@@ -47,9 +53,13 @@ public:
         std::cout << "Executando os processo...\n\n";
 
         while (!processes.empty() || !readyProcesses.empty() || !cpu.empty()) {
-            if (cpu.empty() && !readyProcesses.empty()) {
+            if (scheduler.isItTimeToSwitch(&cpu, readyProcesses)) {
+                if (!cpu.empty()) {
+                    Process *p = cpu.unloadProcess();
+                    
+                }
                 // TODO: Arrumar para o escalonador
-                Process *p = readyProcesses.at(0);
+                Process *p = scheduler.getNextProcess(readyProcesses);
                 readyProcesses.erase(readyProcesses.begin());
                 int duration = p->getDuration() - p->getExecutedTime();
 
