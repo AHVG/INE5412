@@ -26,8 +26,8 @@ private:
     int clock;
 
 public:
-    Kernel() {};
-    ~Kernel() {};
+    Kernel();
+    ~Kernel();
 
     void initialize(); // Criará os processos e etc
 
