@@ -21,45 +21,29 @@ private:
 
 public:
 
-    Process(int _id, int _start, int _duration, int _priority) {
-        id = _id;
-        
-        start = _start;
-        duration = _duration;
-        priority = _priority;
+    Process(int _id, int _start, int _duration, int _priority);
 
-        end = -1;
-        currentState = NOVO;
-        executedTime = 0;
+    ~Process();
 
-        context = nullptr;
-    };
+    int getId() const;
+    int getStart() const;
+    int getEnd() const;
+    int getDuration() const;
+    int getPriority() const;
+    State getCurrentState() const;
+    int getExecutedTime() const;
 
-    ~Process() {};
+    void setId(int _id);
+    void setStart(int _start);
+    void setEnd(int _end);
+    void setDuration(int _duration);
+    void setPriority(int _priority);
+    void setCurrentState(State _currentState);
+    void setExecutedTime(int _executedTime);
 
-    int getId() const { return id; };
-    int getStart() const { return start; };
-    int getEnd() const { return end; };
-    int getDuration() const { return duration; };
-    int getPriority() const { return priority; };
-    State getCurrentState() const { return currentState; };
-    int getExecutedTime() const { return executedTime; };
+    int finished() const;
 
-    void setId(int _id) { id = _id; };
-    void setStart(int _start) { start = _start; };
-    void setEnd(int _end) { end = _end; };
-    void setDuration(int _duration) { duration = _duration; };
-    void setPriority(int _priority) { priority = _priority; };
-    void setCurrentState(State _currentState) { currentState = _currentState; };
-    void setExecutedTime(int _executedTime) { executedTime = _executedTime; };
-
-    int finished() const { return getDuration() == getExecutedTime(); }
-
-	friend std::ostream &operator<<(std::ostream& os, const Process& p) {
-		os << "ID: " << p.getId() << ", Start: " << p.getStart() << ", Duration: " << p.getDuration() << ", Priority: " << p.getPriority() << ", Executed Time: " << p.getExecutedTime() << ", Current State: " << p.getCurrentState();
-		return os;
-	}
-
+	friend std::ostream &operator<<(std::ostream& os, const Process& p);
 };
 
 #endif

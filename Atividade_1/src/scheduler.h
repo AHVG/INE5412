@@ -15,21 +15,12 @@ class Scheduler {
 
     public:
 
-    Scheduler() {};
-    ~Scheduler() {};
+    Scheduler();
+    ~Scheduler();
 
-    int isItTimeToSwitch(CPU *cpu, std::vector<Process *> processes) {
-        return algorithm->isItTimeToSwitch(cpu, processes);
-    }
+    int isItTimeToSwitch(CPU *cpu, std::vector<Process *> processes);
 
-    Process *getNextProcess(std::vector<Process *> &processes) {
-        std::vector<Process *> ps = algorithm->schedule(processes);
-        // TODO arrumar o auto
-        auto itP = ps.begin();
-        Process *p = *itP;
-        processes.erase(itP);
-        return p;
-    }
+    Process *getNextProcess(std::vector<Process *> &processes);
 
 };
 

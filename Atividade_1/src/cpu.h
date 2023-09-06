@@ -15,49 +15,23 @@ private:
 
 public:
 
-    CPU() {
-        process = nullptr;
-        runningTime = 0;
-        timeRunningCurrentProcess = 0;
-        processDurationTime = 0;
-    };
-    ~CPU() {};
+    CPU();
+    ~CPU();
 
-    Process *getProcess() const { return process; };
-    int getRunningTime() const { return runningTime; };
-    int getTimeRunningCurrentProcess() const { return timeRunningCurrentProcess; };
-    int getProcessDurationTime() const { return processDurationTime; };
+    Process *getProcess() const;
+    int getRunningTime() const;
+    int getTimeRunningCurrentProcess() const;
+    int getProcessDurationTime() const;
 
-    void loadProcess(Process *p, int executionDuration) {
-        process = p;
-        processDurationTime = executionDuration;
-        process->setCurrentState(EXECUTANDO);
-    };
+    void loadProcess(Process *p, int executionDuration);
 
-    Process *unloadProcess() {
-        timeRunningCurrentProcess = 0;
-        if (process->finished()) process->setCurrentState(TERMINADO);
-        else process->setCurrentState(PRONTO);
-        Process *aux = process;
-        process = nullptr;
-        return aux;
-    };
+    Process *unloadProcess();
 
-    void execute(int dt){
-        if (process) {
-            timeRunningCurrentProcess += dt;
-            process->setExecutedTime(process->getExecutedTime() + dt);
-        }
-        runningTime += dt;
-    };
+    void execute(int dt);
 
-    int finishExecuting() {
-        return timeRunningCurrentProcess == processDurationTime;
-    }
+    int finishExecuting();
 
-    int empty() {
-        return !process;
-    }
+    int empty();
 
 };
 
