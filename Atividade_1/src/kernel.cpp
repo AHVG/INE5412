@@ -14,7 +14,7 @@ void Kernel::initialize() {
     std::cout << "Inicializando kernel...\n\n";
     
     std::cout << "Lendo arquivo...\n";
-    std::vector<std::string> lines = reader.read("../entrada/entrada.txt");
+    std::vector<std::string> lines = reader.read("./entrada/entrada.txt");
     for (long unsigned int i = 0; i < lines.size(); i++) std::cout << lines[i] << std::endl;
 
     std::cout << std::endl;
