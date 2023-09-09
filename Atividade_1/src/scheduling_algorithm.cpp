@@ -12,8 +12,8 @@ SchedulingAlgorithm::SchedulingAlgorithm() {}
 SchedulingAlgorithm::~SchedulingAlgorithm() {}
     
 int SchedulingAlgorithm::isItTimeToSwitch(CPU *cpu, std::vector<Process *> processes) {
-    if (processes.empty()) return 0;
-    if (cpu->empty() || cpu->finishExecuting()) return 1;
+    if (!processes.empty() && cpu->empty()) return 1;
+    if (cpu->getProcess()->finished()) return 1;
     return 0;
 }
 
@@ -45,5 +45,14 @@ std::vector<Process *> PriorityWithPreemption::schedule(std::vector<Process *> p
 int PriorityWithPreemption::isItTimeToSwitch(CPU *cpu, std::vector<Process *> processes) {
     Process *currentProcess = cpu->getProcess();
     if (std::any_of(processes.begin(), processes.end(), [currentProcess](Process *p) {return p->getPriority() > currentProcess->getPriority();})) return 1;
+    return SchedulingAlgorithm::isItTimeToSwitch(cpu, processes);
+}
+
+std::vector<Process *> withQuantum::schedule(std::vector<Process *> processes){
+    return processes;
+}
+
+int withQuantum::isItTimeToSwitch(CPU *cpu, std::vector<Process *> processes) {
+    if(cpu->getTimeRunningCurrentProcess() == 2){return 1;}
     return SchedulingAlgorithm::isItTimeToSwitch(cpu, processes);
 }

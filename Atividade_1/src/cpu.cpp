@@ -7,7 +7,6 @@ CPU::CPU() {
     process = nullptr;
     runningTime = 0;
     timeRunningCurrentProcess = 0;
-    processDurationTime = 0;
 }
 
 CPU::~CPU() {}
@@ -24,13 +23,8 @@ int CPU::getTimeRunningCurrentProcess() const {
     return timeRunningCurrentProcess;
 }
 
-int CPU::getProcessDurationTime() const {
-    return processDurationTime;
-}
-
-void CPU::loadProcess(Process *p, int executionDuration) {
+void CPU::loadProcess(Process *p) {
     process = p;
-    processDurationTime = executionDuration;
     process->setCurrentState(EXECUTANDO);
 }
 
@@ -49,10 +43,6 @@ void CPU::execute(int dt){
         process->setExecutedTime(process->getExecutedTime() + dt);
     }
     runningTime += dt;
-}
-
-int CPU::finishExecuting() {
-    return timeRunningCurrentProcess == processDurationTime;
 }
 
 int CPU::empty() {

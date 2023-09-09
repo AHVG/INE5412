@@ -36,40 +36,17 @@ void Kernel::run() {
         if (scheduler.isItTimeToSwitch(&cpu, readyProcesses)) {
             if (!cpu.empty()) {
                 Process *p = cpu.unloadProcess();
-                
+                readyProcesses.push_back(p);
             }
-            // TODO: Arrumar para o escalonador
-            Process *p = scheduler.getNextProcess(readyProcesses);
-            readyProcesses.erase(readyProcesses.begin());
-            int duration = p->getDuration() - p->getExecutedTime();
 
-            cpu.loadProcess(p, duration);
+            Process *p = scheduler.getNextProcess(readyProcesses);
+
+            cpu.loadProcess(p);
         }
 
         cpu.execute(1);
 
         std::cout << clock << "-" << clock + 1 << ": " << *cpu.getProcess() << std::endl;
-
-        if (cpu.finishExecuting()) {
-            std::cout << "Trocando contexto..." << std::endl;
-            Process *p = cpu.unloadProcess();
-
-            if (p->getCurrentState() == PRONTO) {
-                readyProcesses.push_back(p);
-            } else {
-                executedProcesses.push_back(p);
-                p->setEnd(clock);
-            }
-
-            if (!readyProcesses.empty()) {
-                // TODO: Arrumar para o escalonador
-                p = readyProcesses.at(0);
-                readyProcesses.erase(readyProcesses.begin());
-                int duration = p->getDuration() - p->getExecutedTime();
-
-                cpu.loadProcess(p, duration);
-            }
-        }
 
         clock++;
         updateReadyProcesses();

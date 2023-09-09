@@ -14,7 +14,7 @@ class SchedulingAlgorithm {
 public:
     
     // TODO ver sobre construtores e destrutores de classe abstrata
-    SchedulingAlgorithm();
+    SchedulingAlgorithm(){};
     
     ~SchedulingAlgorithm();
     
@@ -48,6 +48,13 @@ class PriorityWithPreemption : public SchedulingAlgorithm {
 
 public:
 
+    std::vector<Process *> schedule(std::vector<Process *> processes) override;
+
+    int isItTimeToSwitch(CPU *cpu, std::vector<Process *> processes);
+};
+
+class withQuantum : public SchedulingAlgorithm {
+    public:
     std::vector<Process *> schedule(std::vector<Process *> processes) override;
 
     int isItTimeToSwitch(CPU *cpu, std::vector<Process *> processes);

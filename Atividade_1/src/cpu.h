@@ -11,7 +11,6 @@ private:
     Process *process;
     int runningTime;
     int timeRunningCurrentProcess;
-    int processDurationTime;
 
 public:
 
@@ -21,15 +20,12 @@ public:
     Process *getProcess() const;
     int getRunningTime() const;
     int getTimeRunningCurrentProcess() const;
-    int getProcessDurationTime() const;
 
-    void loadProcess(Process *p, int executionDuration);
+    void loadProcess(Process *p);
 
     Process *unloadProcess();
 
     void execute(int dt);
-
-    int finishExecuting();
 
     int empty();
 
