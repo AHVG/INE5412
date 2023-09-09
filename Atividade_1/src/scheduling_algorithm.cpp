@@ -7,9 +7,9 @@
 #include "cpu.h"
 
 
-SchedulingAlgorithm::SchedulingAlgorithm() {}
+SchedulingAlgorithm::SchedulingAlgorithm(){}
 
-SchedulingAlgorithm::~SchedulingAlgorithm() {}
+SchedulingAlgorithm::~SchedulingAlgorithm(){}
     
 int SchedulingAlgorithm::isItTimeToSwitch(CPU *cpu, std::vector<Process *> processes) {
     if (!processes.empty() && cpu->empty()) return 1;
