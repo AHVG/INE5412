@@ -26,6 +26,7 @@ private:
     CPU cpu;
     
     int clock;
+    int contextSwitches;
 
 public:
     Kernel();
