@@ -1,7 +1,7 @@
 
+#include <algorithm>
 #include <iostream>
 #include <iomanip>
-#include <algorithm>
 
 #include "analyzer.h"
 #include "process.h"
