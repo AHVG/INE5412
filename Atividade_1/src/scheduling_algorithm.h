@@ -56,7 +56,7 @@ public:
     int isItTimeToSwitch(CPU *cpu, std::vector<Process *> processes);
 };
 
-class withQuantum : public SchedulingAlgorithm {
+class QuantumWithoutPriority : public SchedulingAlgorithm {
     public:
     std::vector<Process *> &schedule(std::vector<Process *> &processes) override;
 

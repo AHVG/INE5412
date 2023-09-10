@@ -9,7 +9,7 @@
 
 
 Scheduler::Scheduler() {
-    algorithm = new FCFS();
+    algorithm = new QuantumWithoutPriority();
 }
 Scheduler::~Scheduler() {
     delete algorithm;
