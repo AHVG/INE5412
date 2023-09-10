@@ -19,6 +19,7 @@ private:
     std::vector<Process *> readyProcesses;
     std::vector<Process *> newProcesses;
     std::vector<Process *> PCB;
+    Process *currentProcessRunning;
     
     ProcessFactory factory;
     Scheduler *scheduler;

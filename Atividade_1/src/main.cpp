@@ -12,9 +12,8 @@ int main() {
 
     std::vector<SchedulingAlgorithm *> algorithms = {new QuantumWithoutPriority(), new FCFS(), new PriorityWithPreemption(), new SJF(), new Priority()};
     for (auto algorithm : algorithms) {
-        Kernel *kernel = new Kernel(algorithm);
-        kernel->run();
-        delete kernel;
+        Kernel kernel(algorithm);
+        kernel.run();
     }
     for (long unsigned int i = 0; i < algorithms.size(); i++) delete algorithms[i];
 

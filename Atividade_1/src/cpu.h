@@ -22,8 +22,9 @@ public:
     int getTimeRunningCurrentProcess() const;
 
     // TODO Load o contexto ou o processo? Eu acho que o processo torna o código mais fácil, mas faz mais sentido o contexto
-    void loadProcess(Process *p);
+    void loadProcess(Process *newProcess);
     Process *unloadProcess();
+    Process *switchProcess(Process *newProcess);
 
     void execute();
 

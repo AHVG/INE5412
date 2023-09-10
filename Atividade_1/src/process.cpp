@@ -77,7 +77,8 @@ void Process::setExecutedTime(int _executedTime) {
 }
 
 int Process::finished() const {
-    return getDuration() == getExecutedTime(); }
+    return getDuration() <= getExecutedTime(); 
+}
 
 std::ostream &operator<<(std::ostream& os, const Process& p) {
     os << "ID: " << p.getId() << ", Start: " << p.getStart() << ", Duration: " << p.getDuration() << ", Priority: " << p.getPriority() << ", Executed Time: " << p.getExecutedTime() << ", Current State: " << p.getCurrentState();

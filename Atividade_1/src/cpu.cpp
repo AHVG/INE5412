@@ -23,19 +23,21 @@ int CPU::getTimeRunningCurrentProcess() const {
     return timeRunningCurrentProcess;
 }
 
-void CPU::loadProcess(Process *p) {
-    if (!p) return;
-    process = p;
-    process->setCurrentState(EXECUTANDO);
+void CPU::loadProcess(Process *newProcess) {
+    process = newProcess;
 }
 
 Process *CPU::unloadProcess() {
     timeRunningCurrentProcess = 0;
-    if (process->finished()) process->setCurrentState(TERMINADO);
-    else process->setCurrentState(PRONTO);
     Process *aux = process;
     process = nullptr;
     return aux;
+}
+
+Process *CPU::switchProcess(Process *newProcess) {
+    Process *oldProcess = unloadProcess();
+    loadProcess(newProcess);
+    return oldProcess;
 }
 
 void CPU::execute(){

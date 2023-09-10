@@ -12,6 +12,7 @@
 
 Kernel::Kernel(SchedulingAlgorithm *algorithm) {
     scheduler = new Scheduler(algorithm);
+    currentProcessRunning = nullptr;
 }
 
 Kernel::~Kernel() {
@@ -84,15 +85,19 @@ void Kernel::update() {
 
     // Se for a hora de trocar, troca o processo
     if (scheduler->isItTimeToSwitch(&cpu, readyProcesses)) {
-        // Se a cpu estiver vazia, então descarrega processo
-        if (!cpu.empty()) {
-            Process *p = cpu.unloadProcess();
-            if (p->getCurrentState() != TERMINADO) readyProcesses.push_back(p);
-            else {executedProcesses.push_back(p); p->setEnd(clock);}
+        if (currentProcessRunning) {
+            if (currentProcessRunning->finished()) {
+                executedProcesses.push_back(currentProcessRunning);
+                currentProcessRunning->setEnd(clock);
+                currentProcessRunning->setCurrentState(TERMINADO);
+            } else {
+                readyProcesses.push_back(currentProcessRunning);
+                currentProcessRunning->setCurrentState(PRONTO);
+            }
         }
-        // Carrega o próximo processo na cpu
-        Process *nextProcess = scheduler->getNextProcess(readyProcesses);
-        if (nextProcess) cpu.loadProcess(nextProcess);
+        currentProcessRunning = scheduler->getNextProcess(readyProcesses);
+        if (currentProcessRunning) currentProcessRunning->setCurrentState(EXECUTANDO);
+        cpu.switchProcess(currentProcessRunning);
         contextSwitches++;
     }
 }
@@ -115,7 +120,7 @@ void Kernel::updateReadyProcesses() {
 void Kernel::printState() {
     // TODO boto fé em colocar cor no console
     std::string interval = std::to_string(clock) + "-" + std::to_string(clock + 1);
-    std::cout << std::setw(5) << interval << "  ";
+    std::cout << std::setw(5) << interval << " ";
     for (auto p : PCB) {
         int state = p->getCurrentState();
         if (state == EXECUTANDO) std::cout << "## ";
