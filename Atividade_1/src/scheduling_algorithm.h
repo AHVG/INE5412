@@ -16,46 +16,49 @@ public:
     // TODO ver sobre construtores e destrutores de classe abstrata
     SchedulingAlgorithm();
     
-    ~SchedulingAlgorithm();
+    virtual ~SchedulingAlgorithm();
     
     virtual int isItTimeToSwitch(CPU *cpu, std::vector<Process *> processes);
 
-    virtual std::vector<Process *> schedule(std::vector<Process *> processes) = 0;
+    virtual std::vector<Process *> &schedule(std::vector<Process *> &processes) = 0;
 };
 
-class FCFS: public SchedulingAlgorithm {
+class FCFS : public SchedulingAlgorithm {
 
 public:
 
-    std::vector<Process *> schedule(std::vector<Process *> processes) override;
+    FCFS() {}
+    ~FCFS() {}
+
+    std::vector<Process *> &schedule(std::vector<Process *> &processes) override;
 };
 
 class SJF: public SchedulingAlgorithm {
 
 public:
 
-    std::vector<Process *> schedule(std::vector<Process *> processes) override;
+    std::vector<Process *> &schedule(std::vector<Process *> &processes) override;
 };
 
 class Priority: public SchedulingAlgorithm {
 
 public:
 
-    std::vector<Process *> schedule(std::vector<Process *> processes) override;
+    std::vector<Process *> &schedule(std::vector<Process *> &processes) override;
 };
 
 class PriorityWithPreemption : public SchedulingAlgorithm {
 
 public:
 
-    std::vector<Process *> schedule(std::vector<Process *> processes) override;
+    std::vector<Process *> &schedule(std::vector<Process *> &processes) override;
 
     int isItTimeToSwitch(CPU *cpu, std::vector<Process *> processes);
 };
 
 class withQuantum : public SchedulingAlgorithm {
     public:
-    std::vector<Process *> schedule(std::vector<Process *> processes) override;
+    std::vector<Process *> &schedule(std::vector<Process *> &processes) override;
 
     int isItTimeToSwitch(CPU *cpu, std::vector<Process *> processes);
 };

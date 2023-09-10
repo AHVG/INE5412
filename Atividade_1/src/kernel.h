@@ -9,6 +9,7 @@
 #include "process.h"
 #include "cpu.h"
 
+void printProcesses(std::vector<Process *> processes, std::string processesName);
 
 class Kernel {
 

@@ -22,7 +22,6 @@ public:
     int getTimeRunningCurrentProcess() const;
 
     void loadProcess(Process *p);
-
     Process *unloadProcess();
 
     void execute(int dt);
