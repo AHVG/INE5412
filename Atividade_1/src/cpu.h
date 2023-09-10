@@ -24,7 +24,7 @@ public:
     void loadProcess(Process *p);
     Process *unloadProcess();
 
-    void execute(int dt);
+    void execute();
 
     int empty();
 

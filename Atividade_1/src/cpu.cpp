@@ -38,12 +38,12 @@ Process *CPU::unloadProcess() {
     return aux;
 }
 
-void CPU::execute(int dt){
+void CPU::execute(){
     if (process) {
-        timeRunningCurrentProcess += dt;
-        process->setExecutedTime(process->getExecutedTime() + dt);
+        timeRunningCurrentProcess++;
+        process->setExecutedTime(process->getExecutedTime() + 1);
     }
-    runningTime += dt;
+    runningTime++;
 }
 
 int CPU::empty() {

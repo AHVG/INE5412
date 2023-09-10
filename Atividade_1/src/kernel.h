@@ -9,8 +9,6 @@
 #include "process.h"
 #include "cpu.h"
 
-void printProcesses(std::vector<Process *> processes, std::string processesName);
-
 class Kernel {
 
 private:
@@ -29,6 +27,8 @@ private:
     int contextSwitches;
 
     void updateReadyProcesses();
+    void update();
+    void printState();
 
 public:
     Kernel();

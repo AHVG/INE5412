@@ -30,7 +30,6 @@ void Kernel::initialize() {
     newProcesses = factory.createProcesses(lines);
     // TODO organizar a lista em ordem de criação ?
     PCB = newProcesses;
-    printProcesses(newProcesses, "Processos criados");
     std::cout << std::endl;
 
     clock = 0;
@@ -46,39 +45,17 @@ void Kernel::run() {
     std::cout << std::endl;
     
     while (1) {
-        // Atualizando lista de processos
-        updateReadyProcesses();
 
-        // Se for a hora de trocar, troca o processo
-        if (scheduler.isItTimeToSwitch(&cpu, readyProcesses)) {
-            // Se a cpu estiver vazia, então descarrega processo
-            if (!cpu.empty()) {
-                Process *p = cpu.unloadProcess();
-                if (p->getCurrentState() != TERMINADO) readyProcesses.push_back(p);
-                else {executedProcesses.push_back(p); p->setEnd(clock);}
-            }
-            // Carrega o próximo processo na cpu
-            Process *nextProcess = scheduler.getNextProcess(readyProcesses);
-            if (nextProcess) cpu.loadProcess(nextProcess);
-            contextSwitches++;
-        }
+        // Atualizando
+        update();
 
         if (newProcesses.empty() && readyProcesses.empty() && cpu.empty()) break;
         
-        // Executando processo 
-        cpu.execute(1);
+        // Executando mais um ciclo do processo
+        cpu.execute();
 
-        // TODO boto fé em colocar cor no console
-        std::string interval = std::to_string(clock) + "-" + std::to_string(clock + 1);
-        std::cout << std::setw(5) << interval << "  ";
-        for (auto p : PCB) {
-            int state = p->getCurrentState();
-            if (state == EXECUTANDO) std::cout << "## ";
-            else if (state == NOVO) std::cout << "   ";
-            else if (state == PRONTO) std::cout << "-- ";
-            else std::cout << "   ";
-        }
-        std::cout << std::endl;
+        // Mostrando no console o atual estado dos processos 
+        printState();
 
         // Contando mais um ciclo
         clock++;
@@ -90,6 +67,25 @@ void Kernel::close() {
     Analyzer analyzer;
     analyzer.analyze(this);
     for (long unsigned int i = 0; i < PCB.size(); i++) delete PCB[i];
+}
+
+void Kernel::update() {
+    // Atualizando lista de processos
+    updateReadyProcesses();
+
+    // Se for a hora de trocar, troca o processo
+    if (scheduler.isItTimeToSwitch(&cpu, readyProcesses)) {
+        // Se a cpu estiver vazia, então descarrega processo
+        if (!cpu.empty()) {
+            Process *p = cpu.unloadProcess();
+            if (p->getCurrentState() != TERMINADO) readyProcesses.push_back(p);
+            else {executedProcesses.push_back(p); p->setEnd(clock);}
+        }
+        // Carrega o próximo processo na cpu
+        Process *nextProcess = scheduler.getNextProcess(readyProcesses);
+        if (nextProcess) cpu.loadProcess(nextProcess);
+        contextSwitches++;
+    }
 }
 
 void Kernel::updateReadyProcesses() {
@@ -105,6 +101,20 @@ void Kernel::updateReadyProcesses() {
     });
     newProcesses.resize(std::distance(newProcesses.begin(), newEnd));
 
+}
+
+void Kernel::printState() {
+    // TODO boto fé em colocar cor no console
+    std::string interval = std::to_string(clock) + "-" + std::to_string(clock + 1);
+    std::cout << std::setw(5) << interval << "  ";
+    for (auto p : PCB) {
+        int state = p->getCurrentState();
+        if (state == EXECUTANDO) std::cout << "## ";
+        else if (state == NOVO) std::cout << "   ";
+        else if (state == PRONTO) std::cout << "-- ";
+        else std::cout << "   ";
+    }
+    std::cout << std::endl;
 }
 
 std::vector<Process *> Kernel::getExecutedProcesses() const {
@@ -131,9 +141,3 @@ int Kernel::getContextSwitches() const {
     return contextSwitches;
 }
 
-void printProcesses(std::vector<Process *> processes, std::string processesName) {
-    std::cout << processesName << ":" << std::endl;
-    for (auto p : processes) {
-        std::cout << "      " << *p << std::endl;
-    }
-}
