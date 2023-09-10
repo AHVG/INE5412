@@ -7,8 +7,6 @@
 
 class Analyzer {
 
-private:
-
 public:
 
     void analyze(Kernel *kernel);

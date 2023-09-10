@@ -37,12 +37,15 @@ void Analyzer::analyze(Kernel *kernel) {
     double contextSwitches = kernel->getContextSwitches();
 
     // Mostrando as estatísticas
-    std::cout << "Tempo de resposta por processo: ";
+    std::cout << "METRICAS\n\n";
+    std::cout << "      Tempo de resposta por processo:    ";
     for (long unsigned int i = 0; i < turnaroundTimePerProcess.size(); i++) 
         std::cout << "P" << i + 1 << " - " << turnaroundTimePerProcess[i] << " ciclos ";
     std::cout << std::endl;
-    std::cout << "Tempo médio de resposta:           " << averageTurnaroundTime << " ciclos" << std::endl;
-    std::cout << "Tempo médio de espera:             " << averageWaitingTime << " ciclos" << std::endl;
-    std::cout << "Número de trocas de contexto:      " << contextSwitches << " trocas" << std::endl;
+    std::cout << "      Tempo médio de resposta:           " << averageTurnaroundTime << " ciclos" << std::endl;
+    std::cout << "      Tempo médio de espera:             " << averageWaitingTime << " ciclos" << std::endl;
+    std::cout << "      Número de trocas de contexto:      " << contextSwitches << " trocas" << std::endl;
+
+    std::cout << "\nFIM\n\n";
 
 }
