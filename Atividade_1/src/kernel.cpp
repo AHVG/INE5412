@@ -59,10 +59,6 @@ void Kernel::run() {
 
         // Contando mais um ciclo
         clock++;
-
-        // TODO tirar isso quando tiver tudo mec 
-        if (clock > 20)
-            break;
     }
 }
 
@@ -83,15 +79,6 @@ void Kernel::updateReadyProcesses() {
         return p->getStart() == c;
     });
     processes.resize(std::distance(processes.begin(), newEnd));
-
-    // std::copy_if(readyProcesses.begin(), readyProcesses.end(), std::back_inserter(executedProcesses), [](Process *p) {
-    //     return p->getCurrentState() == TERMINADO;
-    // });
-
-    // newEnd = std::remove_if(readyProcesses.begin(), readyProcesses.end(), [](Process *p) {
-    //     return p->getCurrentState() == TERMINADO;
-    // });
-    // readyProcesses.resize(std::distance(readyProcesses.begin(), newEnd));
 
 }
 
