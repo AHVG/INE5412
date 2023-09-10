@@ -28,6 +28,8 @@ private:
     int clock;
     int contextSwitches;
 
+    void updateReadyProcesses();
+
 public:
     Kernel();
     ~Kernel();
@@ -36,7 +38,16 @@ public:
     void run();         // Executa os processo
     void close();       // Destrói tudo que foi criado
 
-    void updateReadyProcesses();
+    // TODO Será que eu faço para todos o get?
+    std::vector<Process *> getExecutedProcesses() const;
+    std::vector<Process *> getReadyProcesses() const;
+    std::vector<Process *> getNewProcesses() const;
+    std::vector<Process *> getPCB() const;
+
+    int getClock() const;
+    int getContextSwitches() const;
+
 };
+
 
 #endif

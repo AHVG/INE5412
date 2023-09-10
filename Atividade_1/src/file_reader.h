@@ -14,7 +14,7 @@ public:
 	FileReader();
 	~FileReader();
 	
-	std::vector<std::string> read(std::string path);
+	std::vector<std::vector<int>>  read(std::string path);
 
 };
 

@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <algorithm>
 
+#include "analyzer.h"
 #include "process.h"
 #include "kernel.h"
 
@@ -15,9 +16,13 @@ void Kernel::initialize() {
     std::cout << "Inicializando kernel...\n\n";
     
     std::cout << "Lendo arquivo...\n\n";
-    std::vector<std::string> lines = reader.read("entrada.txt");
+    std::vector<std::vector<int>> lines = reader.read("entrada.txt");
     std::cout << "Linhas do arquivo:" << std::endl;
-    for (long unsigned int i = 0; i < lines.size(); i++) std::cout << "linha " << i + 1 << " " << lines[i] << std::endl;
+    for (long unsigned int i = 0; i < lines.size(); i++) {
+        std::cout << i + 1 << "   ";
+        for (auto v : lines[i]) std::cout << v << " ";
+        std::cout << std::endl;
+    }
 
     std::cout << std::endl;
     
@@ -82,8 +87,8 @@ void Kernel::run() {
 
 void Kernel::close() {
     std::cout << "\nEncerrando kernel...\n\n";
-    // TODO colocar as estatisticas aqui para serem printadas
-
+    Analyzer analyzer;
+    analyzer.analyze(this);
     for (long unsigned int i = 0; i < PCB.size(); i++) delete PCB[i];
 }
 
@@ -100,6 +105,30 @@ void Kernel::updateReadyProcesses() {
     });
     newProcesses.resize(std::distance(newProcesses.begin(), newEnd));
 
+}
+
+std::vector<Process *> Kernel::getExecutedProcesses() const {
+    return executedProcesses;
+}
+
+std::vector<Process *> Kernel::getReadyProcesses() const {
+    return readyProcesses;
+}
+
+std::vector<Process *> Kernel::getNewProcesses() const {
+    return newProcesses;
+}
+
+std::vector<Process *> Kernel::getPCB() const {
+    return PCB;
+}
+
+int Kernel::getClock() const {
+    return clock;
+}
+
+int Kernel::getContextSwitches() const {
+    return contextSwitches;
 }
 
 void printProcesses(std::vector<Process *> processes, std::string processesName) {

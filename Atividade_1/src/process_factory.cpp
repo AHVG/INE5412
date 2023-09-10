@@ -14,11 +14,8 @@ Process *ProcessFactory::createProcess(int _id, int _start, int _duration, int _
     return new Process(_id, _start, _duration, _priority);
 }
 
-std::vector<Process *> ProcessFactory::createProcesses(std::vector<std::string> lines){
+std::vector<Process *> ProcessFactory::createProcesses(std::vector<std::vector<int>> lines){
     std::vector<Process *> processes;
-    
-    for(long unsigned int i = 0; i < lines.size(); i++) {
-        processes.push_back(createProcess(i + 1, lines[i][0] - '0', lines[i][1] - '0', lines[i][2] - '0'));
-    }
+    for(long unsigned int i = 0; i < lines.size(); i++) processes.push_back(createProcess(i + 1, lines[i][0], lines[i][1], lines[i][2]));
     return processes;
 }

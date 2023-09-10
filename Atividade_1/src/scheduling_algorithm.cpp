@@ -56,6 +56,7 @@ std::vector<Process *> &QuantumWithoutPriority::schedule(std::vector<Process *> 
 }
 
 int QuantumWithoutPriority::isItTimeToSwitch(CPU *cpu, std::vector<Process *> processes) {
+    // TODO ver um lugar melhor para ficar o quantum (No próprio processo?)
     if(cpu->getTimeRunningCurrentProcess() == 2){return 1;}
     return SchedulingAlgorithm::isItTimeToSwitch(cpu, processes);
 }
