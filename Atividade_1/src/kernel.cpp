@@ -32,20 +32,20 @@ void Kernel::run() {
     std::cout << "Executando os processos...\n\n";
 
     while (!processes.empty() || !readyProcesses.empty() || !cpu.empty()) {
-
-        std::cout << "Antes de atualizar" << std::endl;
         // Atualizando lista de processos
         updateReadyProcesses();
-        std::cout << "Depois de atualizar" << std::endl;
+
         // Se for a hora de trocar, troca o processo
         if (scheduler.isItTimeToSwitch(&cpu, readyProcesses)) {
             // Se a cpu estiver vazia, então descarrega processo
             if (!cpu.empty()) {
                 Process *p = cpu.unloadProcess();
-                readyProcesses.push_back(p);
+                if (p->getCurrentState() != TERMINADO) readyProcesses.push_back(p);
+                else executedProcesses.push_back(p);
             }
             // Carrega o próximo processo na cpu
-            cpu.loadProcess(scheduler.getNextProcess(readyProcesses));
+            Process *nextProcess = scheduler.getNextProcess(readyProcesses);
+            if (nextProcess) cpu.loadProcess(nextProcess);
         }
         // Executando processo 
         cpu.execute(1);
@@ -84,14 +84,14 @@ void Kernel::updateReadyProcesses() {
     });
     processes.resize(std::distance(processes.begin(), newEnd));
 
-    std::copy_if(readyProcesses.begin(), readyProcesses.end(), std::back_inserter(executedProcesses), [](Process *p) {
-        return p->getCurrentState() == TERMINADO;
-    });
+    // std::copy_if(readyProcesses.begin(), readyProcesses.end(), std::back_inserter(executedProcesses), [](Process *p) {
+    //     return p->getCurrentState() == TERMINADO;
+    // });
 
-    newEnd = std::remove_if(readyProcesses.begin(), readyProcesses.end(), [](Process *p) {
-        return p->getCurrentState() == TERMINADO;
-    });
-    readyProcesses.resize(std::distance(readyProcesses.begin(), newEnd));
+    // newEnd = std::remove_if(readyProcesses.begin(), readyProcesses.end(), [](Process *p) {
+    //     return p->getCurrentState() == TERMINADO;
+    // });
+    // readyProcesses.resize(std::distance(readyProcesses.begin(), newEnd));
 
 }
 

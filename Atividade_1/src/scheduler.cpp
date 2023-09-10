@@ -20,6 +20,7 @@ int Scheduler::isItTimeToSwitch(CPU *cpu, std::vector<Process *> processes) {
 }
 
 Process *Scheduler::getNextProcess(std::vector<Process *> &processes) {
+    if (processes.empty()) return nullptr;
     algorithm->schedule(processes);
     // TODO arrumar o auto
     auto itP = processes.begin();

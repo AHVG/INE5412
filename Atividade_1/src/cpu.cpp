@@ -24,6 +24,7 @@ int CPU::getTimeRunningCurrentProcess() const {
 }
 
 void CPU::loadProcess(Process *p) {
+    if (!p) return;
     process = p;
     process->setCurrentState(EXECUTANDO);
 }
