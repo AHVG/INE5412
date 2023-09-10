@@ -48,7 +48,6 @@ int Process::getExecutedTime() const {
     return executedTime;
 }
 
-
 void Process::setId(int _id) {
     id = _id;
 }

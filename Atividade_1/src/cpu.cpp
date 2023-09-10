@@ -42,6 +42,7 @@ void CPU::execute(){
     if (process) {
         timeRunningCurrentProcess++;
         process->setExecutedTime(process->getExecutedTime() + 1);
+        // TODO fazer alguma manipulação aletoria do contexto
     }
     runningTime++;
 }

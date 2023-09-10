@@ -7,8 +7,6 @@
 class FileReader
 {
 
-private:
-
 public:
 
 	FileReader();
