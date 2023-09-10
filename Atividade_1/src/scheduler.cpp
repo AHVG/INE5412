@@ -8,11 +8,18 @@
 #include "cpu.h"
 
 
-Scheduler::Scheduler() {
-    algorithm = new QuantumWithoutPriority();
+Scheduler::Scheduler(SchedulingAlgorithm *_algorithm) {
+    algorithm = _algorithm;
 }
-Scheduler::~Scheduler() {
-    delete algorithm;
+
+Scheduler::~Scheduler() {}
+
+SchedulingAlgorithm *Scheduler::getAlgorithm() const {
+    return algorithm;
+}
+
+void Scheduler::setAlgorithm(SchedulingAlgorithm *_algorithm) {
+    algorithm = _algorithm;
 }
 
 int Scheduler::isItTimeToSwitch(CPU *cpu, std::vector<Process *> processes) {

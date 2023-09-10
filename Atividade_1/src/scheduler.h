@@ -15,8 +15,11 @@ class Scheduler {
 
     public:
 
-    Scheduler();
+    Scheduler(SchedulingAlgorithm *_algorithm);
     ~Scheduler();
+
+    SchedulingAlgorithm *getAlgorithm() const;
+    void setAlgorithm(SchedulingAlgorithm *_algorithm);
 
     int isItTimeToSwitch(CPU *cpu, std::vector<Process *> processes);
 

@@ -3,11 +3,13 @@
 
 #include <algorithm>
 
+#include "scheduling_algorithm.h"
 #include "process_factory.h"
 #include "file_reader.h"
 #include "scheduler.h"
 #include "process.h"
 #include "cpu.h"
+
 
 class Kernel {
 
@@ -19,24 +21,26 @@ private:
     std::vector<Process *> PCB;
     
     ProcessFactory factory;
-    Scheduler scheduler;
+    Scheduler *scheduler;
     FileReader reader;
     CPU cpu;
     
     int clock;
     int contextSwitches;
 
+    void initialize();  // Criará os processos e etc
+    void close();       // Destrói tudo que foi criado
+    
     void updateReadyProcesses();
     void update();
+    
     void printState();
 
 public:
-    Kernel();
+    Kernel(SchedulingAlgorithm *algorithm);
     ~Kernel();
 
-    void initialize();  // Criará os processos e etc
     void run();         // Executa os processo
-    void close();       // Destrói tudo que foi criado
 
     // TODO Será que eu faço para todos o get?
     std::vector<Process *> getExecutedProcesses() const;

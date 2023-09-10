@@ -3,13 +3,20 @@
 #include <iostream>
 #include <iomanip>
 
+
+#include "scheduling_algorithm.h"
 #include "analyzer.h"
 #include "process.h"
 #include "kernel.h"
 
 
-Kernel::Kernel() {}
-Kernel::~Kernel() {}
+Kernel::Kernel(SchedulingAlgorithm *algorithm) {
+    scheduler = new Scheduler(algorithm);
+}
+
+Kernel::~Kernel() {
+    delete scheduler;
+}
 
 void Kernel::initialize() {
     // TODO: Verificar se os objetos retornados são desalocados
@@ -37,8 +44,8 @@ void Kernel::initialize() {
 }
 
 void Kernel::run() { 
+    initialize();
     std::cout << "Executando os processos...\n\n";
-
     // TODO boto fé em colocar cor no console
     std::cout << "tempo ";
     for (auto p : PCB) std::cout << "P" << p->getId() << " ";
@@ -49,6 +56,7 @@ void Kernel::run() {
         // Atualizando
         update();
 
+        // Verificando se ja terminou tudo. Se sim, o kernel encerra
         if (newProcesses.empty() && readyProcesses.empty() && cpu.empty()) break;
         
         // Executando mais um ciclo do processo
@@ -60,6 +68,7 @@ void Kernel::run() {
         // Contando mais um ciclo
         clock++;
     }
+    close();
 }
 
 void Kernel::close() {
@@ -74,7 +83,7 @@ void Kernel::update() {
     updateReadyProcesses();
 
     // Se for a hora de trocar, troca o processo
-    if (scheduler.isItTimeToSwitch(&cpu, readyProcesses)) {
+    if (scheduler->isItTimeToSwitch(&cpu, readyProcesses)) {
         // Se a cpu estiver vazia, então descarrega processo
         if (!cpu.empty()) {
             Process *p = cpu.unloadProcess();
@@ -82,7 +91,7 @@ void Kernel::update() {
             else {executedProcesses.push_back(p); p->setEnd(clock);}
         }
         // Carrega o próximo processo na cpu
-        Process *nextProcess = scheduler.getNextProcess(readyProcesses);
+        Process *nextProcess = scheduler->getNextProcess(readyProcesses);
         if (nextProcess) cpu.loadProcess(nextProcess);
         contextSwitches++;
     }
