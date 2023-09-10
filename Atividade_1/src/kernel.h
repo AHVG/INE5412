@@ -17,7 +17,8 @@ private:
 
     std::vector<Process *> executedProcesses;
     std::vector<Process *> readyProcesses;
-    std::vector<Process *> processes;
+    std::vector<Process *> newProcesses;
+    std::vector<Process *> PCB;
     
     ProcessFactory factory;
     Scheduler scheduler;
@@ -30,11 +31,9 @@ public:
     Kernel();
     ~Kernel();
 
-    void initialize(); // Criará os processos e etc
-
-    void run(); // Executa os processo
-    
-    void close(); // Destrói tudo que foi criado
+    void initialize();  // Criará os processos e etc
+    void run();         // Executa os processo
+    void close();       // Destrói tudo que foi criado
 
     void updateReadyProcesses();
 };

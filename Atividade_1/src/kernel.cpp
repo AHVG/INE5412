@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <iomanip>
 #include <algorithm>
 
 #include "process.h"
@@ -20,9 +21,10 @@ void Kernel::initialize() {
     std::cout << std::endl;
     
     std::cout << "Criando processos...\n";
-    processes = factory.createProcesses(lines);
-    for (long unsigned int i = 0; i < processes.size(); i++) std::cout << *processes[i] << std::endl;
-
+    newProcesses = factory.createProcesses(lines);
+    // TODO organizar a lista em ordem de criação ?
+    PCB = newProcesses;
+    printProcesses(newProcesses, "Processos criados");
     std::cout << std::endl;
 
     clock = 0;
@@ -31,7 +33,11 @@ void Kernel::initialize() {
 void Kernel::run() { 
     std::cout << "Executando os processos...\n\n";
 
-    while (!processes.empty() || !readyProcesses.empty() || !cpu.empty()) {
+    std::cout << "tempo ";
+    for (auto p : PCB) std::cout << "P" << p->getId() << " ";
+    std::cout << std::endl;
+    
+    while (1) {
         // Atualizando lista de processos
         updateReadyProcesses();
 
@@ -47,15 +53,21 @@ void Kernel::run() {
             Process *nextProcess = scheduler.getNextProcess(readyProcesses);
             if (nextProcess) cpu.loadProcess(nextProcess);
         }
+
+        if (newProcesses.empty() && readyProcesses.empty() && cpu.empty()) break;
+        
         // Executando processo 
         cpu.execute(1);
-
-        std::cout << clock << "-" << clock + 1 << ": " << std::endl;
-        printProcesses(processes, "Esperando");
-        printProcesses(readyProcesses, "Prontos");
-        printProcesses(executedProcesses, "Finalizados");
-        if (cpu.getProcess())
-            std::cout << "Executando:\n" << "      " << *cpu.getProcess() << std::endl;
+        std::string interval = std::to_string(clock) + "-" + std::to_string(clock + 1);
+        std::cout << std::setw(5) << interval << "  ";
+        for (auto p : PCB) {
+            int state = p->getCurrentState();
+            if (state == EXECUTANDO) std::cout << "## ";
+            else if (state == NOVO) std::cout << "   ";
+            else if (state == PRONTO) std::cout << "-- ";
+            else std::cout << "   ";
+        }
+        std::cout << std::endl;
 
         // Contando mais um ciclo
         clock++;
@@ -63,22 +75,22 @@ void Kernel::run() {
 }
 
 void Kernel::close() {
-    std::cout << "Encerrando kernel...\n\n";
-    for (long unsigned int i = 0; i < executedProcesses.size(); i++) delete executedProcesses[i];
+    std::cout << "\nEncerrando kernel...\n\n";
+    for (long unsigned int i = 0; i < PCB.size(); i++) delete PCB[i];
 }
 
 void Kernel::updateReadyProcesses() {
     int c = clock;
-    std::copy_if(processes.begin(), processes.end(), std::back_inserter(readyProcesses), [c](Process *p) {
+    std::copy_if(newProcesses.begin(), newProcesses.end(), std::back_inserter(readyProcesses), [c](Process *p) {
         int result = p->getStart() == c;
         if (result) p->setCurrentState(PRONTO);
         return result;
     });
 
-    auto newEnd = std::remove_if(processes.begin(), processes.end(), [c](Process *p) {
+    auto newEnd = std::remove_if(newProcesses.begin(), newProcesses.end(), [c](Process *p) {
         return p->getStart() == c;
     });
-    processes.resize(std::distance(processes.begin(), newEnd));
+    newProcesses.resize(std::distance(newProcesses.begin(), newEnd));
 
 }
 
