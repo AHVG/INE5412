@@ -54,7 +54,7 @@ void Kernel::run() {
     initialize();
     customCout("Executando os processos...\n\n", BRIGHT_GREEN);
 
-    setColor(WHITE);
+    setColor(BRIGHT_WHITE);
     std::cout << "tempo ";
     for (auto p : PCB) std::cout << "P" << p->getId() << " ";
     std::cout << std::endl;
@@ -127,15 +127,15 @@ void Kernel::updateReadyProcesses() {
 void Kernel::printState() {
     // TODO boto fé em colocar cor no console
     std::string interval = std::to_string(clock) + "-" + std::to_string(clock + 1);
-    setColor(WHITE);
+    setColor(BRIGHT_WHITE);
     std::cout << std::setw(5) << interval << " ";
     resetColor();
     
     for (auto p : PCB) {
         int state = p->getCurrentState();
-        if (state == EXECUTANDO) customCout("## ", BLUE);
+        if (state == EXECUTANDO) {customCout("  ", GREEN_BACKGROUND); std::cout << " ";}
         else if (state == NOVO) std::cout << "   ";
-        else if (state == PRONTO) customCout("-- ", RED);
+        else if (state == PRONTO) {customCout("  ", RED_BACKGROUND);  std::cout << " ";}
         else std::cout << "   ";
     }
     std::cout << std::endl;

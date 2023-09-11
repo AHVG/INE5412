@@ -21,7 +21,7 @@ int main() {
         customCout("SIMULANDO " + algorithm.first + "\n\n", BRIGHT_YELLOW);
         Kernel kernel(algorithm.second);
         kernel.run();
-        customCout("FIM DA SIMULACAO DO " + algorithm.first + "\n\n", BRIGHT_YELLOW);
+        customCout("FIM DA SIMULACAO\n\n", BRIGHT_YELLOW);
     }
     for (auto &algorithm : algorithms) delete algorithm.second;
 
