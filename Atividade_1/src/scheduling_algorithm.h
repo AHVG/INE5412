@@ -27,9 +27,6 @@ class FCFS : public SchedulingAlgorithm {
 
 public:
 
-    FCFS() {}
-    ~FCFS() {}
-
     std::vector<Process *> &schedule(std::vector<Process *> &processes) override;
 };
 

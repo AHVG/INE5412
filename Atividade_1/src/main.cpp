@@ -1,7 +1,6 @@
 
 #include <iostream>
 #include <vector>
-#include <map>
 
 #include "scheduling_algorithm.h"
 #include "kernel.h"
@@ -12,7 +11,7 @@ int main() {
 
     customCout("SIMULADOR DE ALGORITMO DE ESCALONAMENTO\n\n", BRIGHT_CYAN);
 
-    std::map<std::string, SchedulingAlgorithm *> algorithms = { {"FCFS", new FCFS()},
+    std::vector<std::pair<std::string, SchedulingAlgorithm *>> algorithms = { {"FCFS", new FCFS()},
                                                                 {"SJF", new SJF()},
                                                                 {"PRIORITY", new Priority()},
                                                                 {"PRIORITY WITH PREEMPTION", new PriorityWithPreemption()},
