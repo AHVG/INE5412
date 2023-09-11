@@ -24,7 +24,6 @@ Kernel::~Kernel() {
 }
 
 void Kernel::initialize() {
-    // TODO: Verificar se os objetos retornados são desalocados
     customCout("Inicializando kernel...\n\n", BRIGHT_GREEN);
 
     setColor(WHITE);
@@ -93,7 +92,7 @@ void Kernel::close() {
 void Kernel::update() {
     // Atualizando lista de processos
     updateReadyProcesses();
-    // Se for a hora de trocar, troca o processo
+    // Se for a hora de trocar, troca o processo e faz o gerenciamento do estado do processo atual
     if (scheduler->isItTimeToSwitch(&cpu, readyProcesses)) {
         if (currentProcessRunning) {
             if (currentProcessRunning->finished()) {
@@ -128,7 +127,6 @@ void Kernel::updateReadyProcesses() {
 }
 
 void Kernel::printState() {
-    // TODO boto fé em colocar cor no console
     std::string interval = std::to_string(clock) + "-" + std::to_string(clock + 1);
     setColor(BRIGHT_WHITE);
     std::cout << std::setw(5) << interval << " ";

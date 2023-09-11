@@ -29,6 +29,9 @@ private:
     int clock;
     int contextSwitches;
 
+    // Criar um histórico do que foi executado, para que o analyzer faça a impressão da simulação?
+    // Desacopla a lógica de print do kernel, mas será que faz sentido?
+
     void initialize();  // Criará os processos e etc
     void close();       // Destrói tudo que foi criado
     
@@ -43,7 +46,7 @@ public:
 
     void run();         // Executa os processo
 
-    // TODO Será que eu faço para todos o get?
+    // Será que precisa get para todos?
     std::vector<Process *> getExecutedProcesses() const;
     std::vector<Process *> getReadyProcesses() const;
     std::vector<Process *> getNewProcesses() const;

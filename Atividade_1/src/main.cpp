@@ -21,6 +21,7 @@ int main() {
         customCout("SIMULANDO " + algorithm.first + "\n\n", BRIGHT_YELLOW);
         Kernel kernel(algorithm.second);
         kernel.run();
+        // Será que é viavel fazer a análise do kernel após ele executar, colocando o analyzer aqui?
         customCout("FIM DA SIMULACAO\n\n", BRIGHT_YELLOW);
     }
     for (auto &algorithm : algorithms) delete algorithm.second;
