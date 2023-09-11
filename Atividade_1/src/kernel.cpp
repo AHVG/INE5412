@@ -27,18 +27,21 @@ void Kernel::initialize() {
     
     std::cout << "Lendo arquivo...\n\n";
     std::vector<std::vector<int>> lines = reader.read("entradas/entrada.txt");
-    std::cout << "Linhas do arquivo:" << std::endl;
+    std::cout << "\033[1;37mLinhas do arquivo:" << std::endl;
     for (long unsigned int i = 0; i < lines.size(); i++) {
         std::cout << i + 1 << "   ";
         for (auto v : lines[i]) std::cout << v << " ";
         std::cout << std::endl;
     }
 
-    std::cout << std::endl;
+    std::cout << "\033[0m" << std::endl;
     
     std::cout << "Criando processos...\n\n";
     newProcesses = factory.createProcesses(lines);
-    // TODO Será que isso está certo?
+    // Organizar os processos de tal forma que o primeiro do vetor sempre é o que foi criado primeiro
+    // deixa a saida toda desconfigurada, com P1 podendo estar no meio da tela. Assim, seria também necessário
+    // setar o id novamente. No entanto, acredito mesmo que a ordem do vetor deve permanecer a mesma ordem
+    // das linhas do arquivo .txt.
     PCB = newProcesses;
 
     clock = 0;

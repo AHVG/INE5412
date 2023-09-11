@@ -8,7 +8,7 @@
 
 int main() {
 
-    std::cout << "Simulador de algoritmos de escalonamento\n\n";
+    std::cout << "\033[1;31mSimulador de algoritmos de escalonamento\033[0m\n\n";
 
     std::vector<SchedulingAlgorithm *> algorithms = {new QuantumWithoutPriority(), new FCFS(), new PriorityWithPreemption(), new SJF(), new Priority()};
     for (auto algorithm : algorithms) {
