@@ -16,7 +16,7 @@ int main() {
                                                                 {"SJF", new SJF()},
                                                                 {"PRIORITY", new Priority()},
                                                                 {"PRIORITY WITH PREEMPTION", new PriorityWithPreemption()},
-                                                                {"QUANTUM", new QuantumWithoutPriority()}};
+                                                                {"ROUND ROBIN", new RoundRobin()}};
     for (auto algorithm : algorithms) {
         customCout("SIMULANDO " + algorithm.first + "\n\n", BRIGHT_YELLOW);
         Kernel kernel(algorithm.second);

@@ -52,12 +52,12 @@ int PriorityWithPreemption::isItTimeToSwitch(CPU *cpu, std::vector<Process *> pr
     return SchedulingAlgorithm::isItTimeToSwitch(cpu, processes);
 }
 
-std::vector<Process *> &QuantumWithoutPriority::schedule(std::vector<Process *> &processes){
+std::vector<Process *> &RoundRobin::schedule(std::vector<Process *> &processes){
     return processes;
 }
 
-int QuantumWithoutPriority::isItTimeToSwitch(CPU *cpu, std::vector<Process *> processes) {
+int RoundRobin::isItTimeToSwitch(CPU *cpu, std::vector<Process *> processes) {
     // TODO ver um lugar melhor para ficar o quantum (No próprio processo?)
-    if(cpu->getTimeRunningCurrentProcess() == 2) return 1;
+    if(cpu->getTimeRunningCurrentProcess() == cpu->getQuantum()) return 1;
     return SchedulingAlgorithm::isItTimeToSwitch(cpu, processes);
 }

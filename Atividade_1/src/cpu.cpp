@@ -7,6 +7,7 @@ CPU::CPU() {
     process = nullptr;
     runningTime = 0;
     timeRunningCurrentProcess = 0;
+    quantum = 2;
 }
 
 CPU::~CPU() {}
@@ -21,6 +22,14 @@ int CPU::getRunningTime() const {
 
 int CPU::getTimeRunningCurrentProcess() const {
     return timeRunningCurrentProcess;
+}
+
+int CPU::getQuantum() const {
+    return quantum;
+}
+
+void CPU::setQuantum(int _quantum) {
+    quantum = _quantum;
 }
 
 void CPU::loadProcess(Process *newProcess) {
