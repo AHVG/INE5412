@@ -32,6 +32,7 @@ public:
     int getPriority() const;
     State getCurrentState() const;
     int getExecutedTime() const;
+    Context *getContext() const;
 
     void setId(int _id);
     void setStart(int _start);

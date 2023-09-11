@@ -24,6 +24,7 @@ int CPU::getTimeRunningCurrentProcess() const {
 }
 
 void CPU::loadProcess(Process *newProcess) {
+    if (newProcess) context = newProcess->getContext();
     process = newProcess;
 }
 
@@ -31,6 +32,7 @@ Process *CPU::unloadProcess() {
     timeRunningCurrentProcess = 0;
     Process *aux = process;
     process = nullptr;
+    context = nullptr;
     return aux;
 }
 
@@ -42,6 +44,9 @@ Process *CPU::switchProcess(Process *newProcess) {
 
 void CPU::execute(){
     if (process) {
+        context->setPC(context->getPC() + 1);
+        context->setStatus(1);
+        context->setSP(context->getSP() - 1);
         timeRunningCurrentProcess++;
         process->setExecutedTime(process->getExecutedTime() + 1);
         // TODO fazer alguma manipulação aletoria do contexto

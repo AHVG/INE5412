@@ -32,6 +32,6 @@ void Context::setPC(long int _PC) {
     PC = _PC;
 }
 
-void Context::setstatus(long int _status) {
+void Context::setStatus(long int _status) {
     status = _status;
 }

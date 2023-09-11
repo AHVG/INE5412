@@ -15,10 +15,12 @@ Process::Process(int _id, int _start, int _duration, int _priority) {
     currentState = NOVO;
     executedTime = 0;
 
-    context = nullptr;
+    context = new Context(0xffffffff, 0, 0);
 }
 
-Process::~Process() {}
+Process::~Process() {
+    delete context;
+}
 
 int Process::getId() const {
     return id;
@@ -46,6 +48,10 @@ State Process::getCurrentState() const {
 
 int Process::getExecutedTime() const {
     return executedTime;
+}
+
+Context *Process::getContext() const {
+    return context;
 }
 
 void Process::setId(int _id) {

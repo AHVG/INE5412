@@ -26,7 +26,7 @@ public:
 
     void setSP(long int _SP);
     void setPC(long int _PC);
-    void setstatus(long int _status);
+    void setStatus(long int _status);
 
 };
 
