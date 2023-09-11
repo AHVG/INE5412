@@ -8,6 +8,7 @@
 #include "analyzer.h"
 #include "process.h"
 #include "kernel.h"
+#include "utils.h"
 
 
 Kernel::Kernel(SchedulingAlgorithm *algorithm) {
@@ -23,26 +24,27 @@ Kernel::~Kernel() {
 
 void Kernel::initialize() {
     // TODO: Verificar se os objetos retornados são desalocados
-    std::cout << "Inicializando kernel...\n\n";
-    
-    std::cout << "Lendo arquivo...\n\n";
+    customCout("Inicializando kernel...\n\n", BRIGHT_GREEN);
+
+    setColor(WHITE);
+    std::cout << "Arquivo " << BRIGHT_WHITE << "entradas/entrada.txt\n\n" << WHITE;
     std::vector<std::vector<int>> lines = reader.read("entradas/entrada.txt");
-    std::cout << "\033[1;37mLinhas do arquivo:" << std::endl;
     for (long unsigned int i = 0; i < lines.size(); i++) {
         std::cout << i + 1 << "   ";
         for (auto v : lines[i]) std::cout << v << " ";
         std::cout << std::endl;
     }
-
-    std::cout << "\033[0m" << std::endl;
     
-    std::cout << "Criando processos...\n\n";
+    std::cout << "\nProcessos \n\n";
     newProcesses = factory.createProcesses(lines);
     // Organizar os processos de tal forma que o primeiro do vetor sempre é o que foi criado primeiro
     // deixa a saida toda desconfigurada, com P1 podendo estar no meio da tela. Assim, seria também necessário
     // setar o id novamente. No entanto, acredito mesmo que a ordem do vetor deve permanecer a mesma ordem
     // das linhas do arquivo .txt.
     PCB = newProcesses;
+    for (auto p : PCB) std::cout << *p << std::endl;
+    std::cout << std::endl;
+    resetColor();
 
     clock = 0;
     contextSwitches = 0;
@@ -50,12 +52,14 @@ void Kernel::initialize() {
 
 void Kernel::run() { 
     initialize();
-    std::cout << "Executando os processos...\n\n";
-    // TODO boto fé em colocar cor no console
+    customCout("Executando os processos...\n\n", BRIGHT_GREEN);
+
+    setColor(WHITE);
     std::cout << "tempo ";
     for (auto p : PCB) std::cout << "P" << p->getId() << " ";
     std::cout << std::endl;
-    
+    resetColor();
+
     while (1) {
 
         // Atualizando
@@ -77,7 +81,7 @@ void Kernel::run() {
 }
 
 void Kernel::close() {
-    std::cout << "\nEncerrando kernel...\n\n";
+    customCout("\nEncerrando kernel...\n\n", BRIGHT_GREEN);
     Analyzer analyzer;
     analyzer.analyze(this);
     for (long unsigned int i = 0; i < PCB.size(); i++) delete PCB[i];
@@ -123,12 +127,15 @@ void Kernel::updateReadyProcesses() {
 void Kernel::printState() {
     // TODO boto fé em colocar cor no console
     std::string interval = std::to_string(clock) + "-" + std::to_string(clock + 1);
+    setColor(WHITE);
     std::cout << std::setw(5) << interval << " ";
+    resetColor();
+    
     for (auto p : PCB) {
         int state = p->getCurrentState();
-        if (state == EXECUTANDO) std::cout << "## ";
+        if (state == EXECUTANDO) customCout("## ", BLUE);
         else if (state == NOVO) std::cout << "   ";
-        else if (state == PRONTO) std::cout << "-- ";
+        else if (state == PRONTO) customCout("-- ", RED);
         else std::cout << "   ";
     }
     std::cout << std::endl;
