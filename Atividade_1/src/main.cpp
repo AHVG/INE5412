@@ -10,7 +10,7 @@
 
 int main() {
 
-    customCout("Simulador de algoritmos de escalonamen", BRIGHT_RED);
+    customCout("SIMULADOR DE ALGORITMO DE ESCALONAMENTO\n\n", BRIGHT_CYAN);
 
     std::map<std::string, SchedulingAlgorithm *> algorithms = { {"FCFS", new FCFS()},
                                                                 {"SJF", new SJF()},
@@ -24,6 +24,8 @@ int main() {
         customCout("FIM DA SIMULACAO\n\n", BRIGHT_YELLOW);
     }
     for (auto &algorithm : algorithms) delete algorithm.second;
+
+    customCout("FIM DAS SIMULACOES\n\n", BRIGHT_CYAN);
 
     return 0;
 }

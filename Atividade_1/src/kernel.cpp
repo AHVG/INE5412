@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <iostream>
 #include <iomanip>
+#include <cmath>
 
 
 #include "scheduling_algorithm.h"
@@ -30,7 +31,8 @@ void Kernel::initialize() {
     std::cout << "Arquivo " << BRIGHT_WHITE << "entradas/entrada.txt\n\n" << WHITE;
     std::vector<std::vector<int>> lines = reader.read("entradas/entrada.txt");
     for (long unsigned int i = 0; i < lines.size(); i++) {
-        std::cout << i + 1 << "   ";
+        int width = std::log10(lines.size()) + 1;
+        std::cout << std::setw(width) << i + 1 << "   ";
         for (auto v : lines[i]) std::cout << v << " ";
         std::cout << std::endl;
     }
@@ -54,10 +56,11 @@ void Kernel::run() {
     initialize();
     customCout("Executando os processos...\n\n", BRIGHT_GREEN);
 
+    int width = std::log10(PCB.size()) + 1;
     setColor(BRIGHT_WHITE);
     std::cout << "tempo ";
-    for (auto p : PCB) std::cout << "P" << p->getId() << " ";
-    std::cout << std::endl;
+    for (auto p : PCB) std::cout << "P" << std::setw(width) << std::setfill('0') << p->getId() << " ";
+    std::cout << std::setfill(' ') << std::endl;
     resetColor();
 
     while (1) {
@@ -131,12 +134,13 @@ void Kernel::printState() {
     std::cout << std::setw(5) << interval << " ";
     resetColor();
     
+    int width = std::log10(PCB.size()) + 1;
     for (auto p : PCB) {
         int state = p->getCurrentState();
-        if (state == EXECUTANDO) {customCout("  ", GREEN_BACKGROUND); std::cout << " ";}
-        else if (state == NOVO) std::cout << "   ";
-        else if (state == PRONTO) {customCout("  ", RED_BACKGROUND);  std::cout << " ";}
-        else std::cout << "   ";
+        if (state == EXECUTANDO) {customCout("  ", WEAK_GREEN_BACKGROUND); std::cout << std::setw(width) << " ";}
+        else if (state == NOVO) std::cout << std::setw(width + 2) << " ";
+        else if (state == PRONTO) {customCout("  ", WEAK_RED_BACKGROUND);  std::cout << std::setw(width) << " ";}
+        else std::cout << std::setw(width + 2) << " ";
     }
     std::cout << std::endl;
 }
