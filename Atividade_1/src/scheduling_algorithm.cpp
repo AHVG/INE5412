@@ -13,7 +13,8 @@ SchedulingAlgorithm::~SchedulingAlgorithm(){}
     
 int SchedulingAlgorithm::isItTimeToSwitch(CPU *cpu, std::vector<Process *> processes) {
     if (!processes.empty() && cpu->empty()) return 1;
-    if (cpu->getProcess()->finished()) return 1;
+    if (cpu->getProcess() && cpu->getProcess()->finished()) return 1;
+
     return 0;
 }
 

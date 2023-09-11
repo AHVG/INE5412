@@ -13,6 +13,8 @@
 Kernel::Kernel(SchedulingAlgorithm *algorithm) {
     scheduler = new Scheduler(algorithm);
     currentProcessRunning = nullptr;
+    clock = 0;
+    contextSwitches = 0;
 }
 
 Kernel::~Kernel() {
@@ -36,9 +38,8 @@ void Kernel::initialize() {
     
     std::cout << "Criando processos...\n\n";
     newProcesses = factory.createProcesses(lines);
-    // TODO organizar a lista em ordem de criação ?
+    // TODO Será que isso está certo?
     PCB = newProcesses;
-    std::cout << std::endl;
 
     clock = 0;
     contextSwitches = 0;
@@ -82,7 +83,6 @@ void Kernel::close() {
 void Kernel::update() {
     // Atualizando lista de processos
     updateReadyProcesses();
-
     // Se for a hora de trocar, troca o processo
     if (scheduler->isItTimeToSwitch(&cpu, readyProcesses)) {
         if (currentProcessRunning) {
