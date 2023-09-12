@@ -8,7 +8,7 @@
 #include "kernel.h"
 #include "utils.h"
 
-
+//Classe responsável por analisar as métricas de cada algoritmo de escalonamento
 void Analyzer::analyze(Kernel *kernel) {
     std::vector<Process *> pcb = kernel->getPCB();
     

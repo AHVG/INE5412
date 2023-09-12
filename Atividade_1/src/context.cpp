@@ -3,6 +3,7 @@
 
 #include "context.h"
 
+// Classe responsável por guardar o contexto de cada processo
 
 Context::Context(long int _SP, long int _PC, long int _status) : SP(_SP), PC(_PC), status(_status) {}
 
