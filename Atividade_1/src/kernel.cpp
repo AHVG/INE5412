@@ -11,7 +11,7 @@
 #include "kernel.h"
 #include "utils.h"
 
-
+// Classe responsável por gerenciar o kernel
 Kernel::Kernel(SchedulingAlgorithm *algorithm) {
     scheduler = new Scheduler(algorithm);
     currentProcessRunning = nullptr;
@@ -23,6 +23,8 @@ Kernel::~Kernel() {
     delete scheduler;
 }
 
+// Método que inicializa o kernel
+// Lê o arquivo de entrada e cria os processos
 void Kernel::initialize() {
     customCout("Inicializando kernel...\n\n", BRIGHT_GREEN);
 
@@ -51,6 +53,8 @@ void Kernel::initialize() {
     contextSwitches = 0;
 }
 
+// Método responsável pela execucao do Kernel
+// Executa os processos e gerencia o estado de cada um
 void Kernel::run() { 
     initialize();
     customCout("Executando os processos...\n\n", BRIGHT_GREEN);
@@ -82,6 +86,8 @@ void Kernel::run() {
     close();
 }
 
+// Método responsável por encerrar o kernel
+// Analisa as metricas de cada algoritmo de escalonamento usando a classe Analyzer
 void Kernel::close() {
     customCout("\nEncerrando kernel...\n\n", BRIGHT_GREEN);
     Analyzer analyzer;
@@ -89,6 +95,9 @@ void Kernel::close() {
     for (long unsigned int i = 0; i < PCB.size(); i++) delete PCB[i];
 }
 
+// Método responsável por atualizar o estado dos processsos
+// Verifica se já é hora de trocar de processo
+// Se for, troca de processo e gerencia o estado do processo atual
 void Kernel::update() {
     // Atualizando lista de processos
     updateReadyProcesses();
@@ -111,6 +120,9 @@ void Kernel::update() {
     }
 }
 
+// Método responsável por atualizar a lista de processos prontos
+// Verifica se já é hora de adicionar um processo na lista de prontos
+// Se for, adiciona o processo na lista de prontos e gerencia o estado do processo
 void Kernel::updateReadyProcesses() {
     int c = clock;
     std::copy_if(newProcesses.begin(), newProcesses.end(), std::back_inserter(readyProcesses), [c](Process *p) {
@@ -126,6 +138,7 @@ void Kernel::updateReadyProcesses() {
 
 }
 
+// Metodo responsavel por mostrar no console o estado atual dos processos
 void Kernel::printState() {
     std::string interval = std::to_string(clock) + "-" + std::to_string(clock + 1);
     setColor(BRIGHT_WHITE);
