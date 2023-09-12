@@ -2,7 +2,7 @@
 #include "cpu.h"
 #include "process.h"
 
-
+// Classe responsável por simular a CPU
 CPU::CPU() {
     process = nullptr;
     runningTime = 0;
@@ -31,12 +31,13 @@ int CPU::getQuantum() const {
 void CPU::setQuantum(int _quantum) {
     quantum = _quantum;
 }
-
+// Carrega o processo na CPU, ou seja, coloca o processo que esta em execução na CPU
 void CPU::loadProcess(Process *newProcess) {
     if (newProcess) context = newProcess->getContext();
     process = newProcess;
 }
 
+// Descarregar processo, ou seja, retira o processo que esta em execução da CPU
 Process *CPU::unloadProcess() {
     timeRunningCurrentProcess = 0;
     Process *aux = process;
@@ -44,13 +45,14 @@ Process *CPU::unloadProcess() {
     context = nullptr;
     return aux;
 }
-
+// Método responsável pela troca de processo, consequentemente, troca de contexto
 Process *CPU::switchProcess(Process *newProcess) {
     Process *oldProcess = unloadProcess();
     loadProcess(newProcess);
     return oldProcess;
 }
 
+// Método responsável por executar o processo que esta na CPU
 void CPU::execute(){
     if (process) {
         context->setPC(context->getPC() + 1);

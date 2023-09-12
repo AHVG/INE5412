@@ -3,7 +3,7 @@
 
 #include "process.h"
 
-
+// Classe responsável pelos processos
 Process::Process(int _id, int _start, int _duration, int _priority) {
     id = _id;
     
@@ -86,6 +86,7 @@ int Process::finished() const {
     return getDuration() <= getExecutedTime(); 
 }
 
+// Método que retorna os dados de cada processo
 std::ostream &operator<<(std::ostream& os, const Process& p) {
     os << "ID: " << p.getId() << ", Start: " << p.getStart() << ", Duration: " << p.getDuration() << ", Priority: " << p.getPriority() << ", Executed Time: " << p.getExecutedTime() << ", Current State: " << p.getCurrentState();
     return os;
