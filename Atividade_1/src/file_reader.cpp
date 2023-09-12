@@ -6,7 +6,7 @@
 
 #include "file_reader.h"
 
-
+// Classe responsávelco por ler os arquivos de entrada
 FileReader::FileReader() {}
 FileReader::~FileReader() {}
 
