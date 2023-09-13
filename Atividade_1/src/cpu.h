@@ -10,7 +10,7 @@ class CPU {
 private:
 
     Process *process;
-    Context *context;
+    Context *process_context;
     int runningTime;
     int timeRunningCurrentProcess;
     int quantum;

@@ -1,9 +1,6 @@
 #ifndef _H_CONTEXT
 #define _H_CONTEXT
 
-#include <vector>
-
-
 class Context {
 
 private:
@@ -22,11 +19,12 @@ public:
     long int getSP() const;
     long int getPC() const;
     long int getStatus() const;
-    const long int *getGpr() const;
+    long int getGpr(int index) const;
 
     void setSP(long int _SP);
     void setPC(long int _PC);
     void setStatus(long int _status);
+    void setGpr(int index, long int value);
 
 };
 
