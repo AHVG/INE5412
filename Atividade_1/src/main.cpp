@@ -40,9 +40,8 @@ int main() {
         }
     }
 
-    for (auto &algorithm : algorithms){
-        delete algorithm.second;
-    }
+    for (auto &algorithm : algorithms) delete algorithm.second;
+
     customCout("FIM DAS SIMULACOES\n\n", BRIGHT_CYAN);
 
     return 0;
