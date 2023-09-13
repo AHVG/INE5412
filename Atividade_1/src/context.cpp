@@ -22,11 +22,11 @@ long int Context::getStatus() const {
 }
 
 long int Context::getGpr(int index) const {
-    return gpr[index];
+    if (index >= 0 && index < 6) return gpr[index];
 }
 
 void Context::setGpr(int index, long int value) {
-    gpr[index] = value;
+    if(index >= 0 && index < 6) gpr[index] = value;
 }
 
 void Context::setSP(long int _SP) {
