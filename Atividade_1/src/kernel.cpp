@@ -29,8 +29,8 @@ void Kernel::initialize() {
     customCout("Inicializando kernel...\n\n", BRIGHT_GREEN);
 
     setColor(WHITE);
-    std::cout << "Arquivo " << BRIGHT_WHITE << "entradas/entrada1.txt\n\n" << WHITE;
-    std::vector<std::vector<int>> lines = reader.read("entradas/entrada1.txt");
+    std::cout << "Arquivo " << BRIGHT_WHITE << "entradas/entrada7.txt\n\n" << WHITE;
+    std::vector<std::vector<int>> lines = reader.read("entradas/entrada7.txt");
     for (long unsigned int i = 0; i < lines.size(); i++) {
         int width = std::log10(lines.size()) + 1;
         std::cout << std::setw(width) << i + 1 << "   ";
@@ -58,7 +58,9 @@ void Kernel::initialize() {
 void Kernel::run() { 
     initialize();
     customCout("Executando os processos...\n\n", BRIGHT_GREEN);
-
+    // No output gerado para os processos a cor vermelha representa que
+    // o processo foi iniciado e está pronto para ser executado
+    // a cor verde representa que o processo está sendo executado
     int width = std::log10(PCB.size()) + 1;
     setColor(BRIGHT_WHITE);
     std::cout << "tempo ";
