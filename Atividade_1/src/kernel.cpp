@@ -29,8 +29,8 @@ void Kernel::initialize() {
     customCout("Inicializando kernel...\n\n", BRIGHT_GREEN);
 
     setColor(WHITE);
-    std::cout << "Arquivo " << BRIGHT_WHITE << "entradas/entrada.txt\n\n" << WHITE;
-    std::vector<std::vector<int>> lines = reader.read("entradas/entrada.txt");
+    std::cout << "Arquivo " << BRIGHT_WHITE << "entradas/entrada1.txt\n\n" << WHITE;
+    std::vector<std::vector<int>> lines = reader.read("entradas/entrada1.txt");
     for (long unsigned int i = 0; i < lines.size(); i++) {
         int width = std::log10(lines.size()) + 1;
         std::cout << std::setw(width) << i + 1 << "   ";
@@ -116,7 +116,10 @@ void Kernel::update() {
             }
         }
         currentProcessRunning = scheduler->getNextProcess(readyProcesses);
-        if (currentProcessRunning) currentProcessRunning->setCurrentState(EXECUTANDO);
+        if (currentProcessRunning) {
+            readyProcesses.erase(readyProcesses.begin());
+            currentProcessRunning->setCurrentState(EXECUTANDO);
+        }
         cpu.switchProcess(currentProcessRunning);
         contextSwitches++;
     }
