@@ -23,6 +23,7 @@ long int Context::getStatus() const {
 
 long int Context::getGpr(int index) const {
     if (index >= 0 && index < 6) return gpr[index];
+    else return -1;
 }
 
 void Context::setGpr(int index, long int value) {
