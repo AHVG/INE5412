@@ -21,8 +21,12 @@ long int Context::getStatus() const {
     return status;
 }
 
-const long int *Context::getGpr() const {
-    return gpr;
+long int Context::getGpr(int index) const {
+    return gpr[index];
+}
+
+void Context::setGpr(int index, long int value) {
+    gpr[index] = value;
 }
 
 void Context::setSP(long int _SP) {
