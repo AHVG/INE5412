@@ -53,9 +53,21 @@ Process *CPU::switchProcess(Process *newProcess) {
 
 void CPU::execute(){
     if (process) {
-        // TODO fazer operações aleatórios nos registradores
+        std::array<unsigned char, 8> aux;
+        for (int i = 0; i < 8; i++) aux[i] = rand() % 256;
+        Register rAux(aux);
+        process_context->setPC(rAux);
+        for (int i = 0; i < 8; i++) aux[i] = rand() % 256;
+        rAux.setBytes(aux);
+        process_context->setSP(rAux);
+        for (int i = 0; i < 8; i++) aux[i] = rand() % 256;
+        rAux.setBytes(aux);
+        process_context->setStatus(rAux);
+        for (int i = 0; i < 8; i++) aux[i] = rand() % 256;
+        rAux.setBytes(aux);
+        for (int i = 0; i < 6; i++) {process_context->setGpr(i, rAux); std::cout << rAux << std::endl;}
         timeRunningCurrentProcess++;
-        process->setExecutedTime(process->getExecutedTime() + 1);
+        process->incrementExecutedTime();
     }
     runningTime++;
 }

@@ -44,6 +44,8 @@ public:
 
     int finished() const;
 
+    void incrementExecutedTime();
+
 	friend std::ostream &operator<<(std::ostream& os, const Process& p);
 };
 
