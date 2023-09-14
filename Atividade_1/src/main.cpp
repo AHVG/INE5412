@@ -16,7 +16,7 @@ int main() {
                 {"PRIORITY", new Priority()},
                 {"PRIORITY WITH PREEMPTION", new PriorityWithPreemption()},
                 {"ROUND ROBIN", new RoundRobin()}};
-    while(1){
+    for(;;) {
 
         customCout("INSIRA O NOME DO ALGORITMO DE ESCALONAMENTO QUE DESEJA SIMULAR\n", BRIGHT_CYAN);
         customCout("OPCOES: 1 -> FCFS, 2 -> SJF, 3 -> PRIORITY, 4 -> PRIORITY WITH PREEMPTION,  5 -> ROUND ROBIN, 6 -> RODAR TODOS, -1 -> SAIR\n", BRIGHT_CYAN);

@@ -54,6 +54,7 @@ Process *CPU::switchProcess(Process *newProcess) {
 
 void INE5412::execute(){
     if (process) {
+        // Simulando operações sobre o contexto com geração de número aleatório
         std::array<unsigned char, 8> aux;
         for (int i = 0; i < 8; i++) aux[i] = rand() % 256;
         Register rAux(aux);
