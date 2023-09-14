@@ -3,21 +3,21 @@
 
 #include <string>
 #include "process.h"
+#include "file.h"
 
 
 class ProcessFactory {
 
 private:
 
+    long long unsigned int id = 0;
 
 public:
 
     ProcessFactory();
     ~ProcessFactory();
 
-    Process *createProcess(int _id, int _start, int _duration, int _priority);
-
-    std::vector<Process *> createProcesses(std::vector<std::vector<int>>  lines);
+    std::vector<Process *> createProcesses(std::vector<ProcessParams *> processesParams);
 
 };
 
