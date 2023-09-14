@@ -24,7 +24,7 @@ private:
     ProcessFactory factory;
     Scheduler *scheduler;
     FileReader reader;
-    CPU cpu;
+    INE5412 cpu;
     
     int clock;
     int contextSwitches;

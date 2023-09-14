@@ -32,12 +32,12 @@ void CPU::setQuantum(int _quantum) {
     quantum = _quantum;
 }
 
-void CPU::loadProcess(Process *newProcess) {
+void INE5412::loadProcess(Process *newProcess) {
     if (newProcess) process_context = newProcess->getContext();
     process = newProcess;
 }
 
-Process *CPU::unloadProcess() {
+Process *INE5412::unloadProcess() {
     timeRunningCurrentProcess = 0;
     Process *aux = process;
     process = nullptr;
@@ -46,12 +46,13 @@ Process *CPU::unloadProcess() {
 }
 
 Process *CPU::switchProcess(Process *newProcess) {
+    // Essa troca de ponteiro seria o equivalente ao real de trocar de contexto
     Process *oldProcess = unloadProcess();
     loadProcess(newProcess);
     return oldProcess;
 }
 
-void CPU::execute(){
+void INE5412::execute(){
     if (process) {
         std::array<unsigned char, 8> aux;
         for (int i = 0; i < 8; i++) aux[i] = rand() % 256;
@@ -65,7 +66,7 @@ void CPU::execute(){
         process_context->setStatus(rAux);
         for (int i = 0; i < 8; i++) aux[i] = rand() % 256;
         rAux.setBytes(aux);
-        for (int i = 0; i < 6; i++) {process_context->setGpr(i, rAux); std::cout << rAux << std::endl;}
+        for (int i = 0; i < 6; i++) process_context->setGpr(i, rAux);
         timeRunningCurrentProcess++;
         process->incrementExecutedTime();
     }

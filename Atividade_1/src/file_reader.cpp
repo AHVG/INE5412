@@ -3,7 +3,6 @@
 #include <fstream>
 #include <vector>
 #include <string>
-
 #include "file_reader.h"
 
 // Classe responsávelco por ler os arquivos de entrada
