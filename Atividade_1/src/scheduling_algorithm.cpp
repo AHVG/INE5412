@@ -24,20 +24,20 @@ std::vector<Process *> &FCFS::schedule(std::vector<Process *> &processes) {
 }
 // Ordena os processos pelo tempo de duração
 std::vector<Process *> &SJF::schedule(std::vector<Process *> &processes) {
-    std::sort(processes.begin(), processes.end(), [](const Process *a, const Process *b) {
+    std::nth_element(processes.begin(), processes.begin(), processes.end(), [](const Process *a, const Process *b) {
         return a->getDuration() < b->getDuration();
     });
     return processes;
 }
 // Ordena os processos pela prioridade
 std::vector<Process *> &Priority::schedule(std::vector<Process *> &processes) {
-    std::sort(processes.begin(), processes.end(), [](const Process *a, const Process *b) {
+    std::nth_element(processes.begin(), processes.begin(), processes.end(), [](const Process *a, const Process *b) {
         return a->getPriority() > b->getPriority();
     });
     return processes;
 }
 std::vector<Process *> &PriorityWithPreemption::schedule(std::vector<Process *> &processes) {
-    std::sort(processes.begin(), processes.end(), [](const Process *a, const Process *b) {
+    std::nth_element(processes.begin(),processes.begin(), processes.end(), [](const Process *a, const Process *b) {
         return a->getPriority() > b->getPriority();
     });
     return processes;
