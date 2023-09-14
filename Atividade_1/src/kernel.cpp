@@ -10,6 +10,7 @@
 #include "process.h"
 #include "kernel.h"
 #include "utils.h"
+#include "file.h"
 
 // Classe responsável por gerenciar o kernel
 Kernel::Kernel(SchedulingAlgorithm *algorithm) {
@@ -29,14 +30,11 @@ void Kernel::initialize() {
     customCout("Inicializando kernel...\n\n", BRIGHT_GREEN);
 
     setColor(WHITE);
-    std::cout << "Arquivo " << BRIGHT_WHITE << "entradas/entrada1.txt\n\n" << WHITE;
-    std::vector<std::vector<int>> lines = reader.read("entradas/entrada1.txt");
-    for (long unsigned int i = 0; i < lines.size(); i++) {
-        int width = std::log10(lines.size()) + 1;
-        std::cout << std::setw(width) << i + 1 << "   ";
-        for (auto v : lines[i]) std::cout << v << " ";
-        std::cout << std::endl;
-    }
+    std::cout << "Arquivo " << BRIGHT_WHITE << "entrada.txt\n\n" << WHITE;
+    file.read_file();
+    std::vector<ProcessParams *> lines = file.getProcesses();
+    file.print_processes_params();
+    resetColor();
     
     std::cout << "\nProcessos \n\n";
     newProcesses = factory.createProcesses(lines);

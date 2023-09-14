@@ -5,7 +5,7 @@
 
 #include "scheduling_algorithm.h"
 #include "process_factory.h"
-#include "file_reader.h"
+#include "file.h"
 #include "scheduler.h"
 #include "process.h"
 #include "cpu.h"
@@ -23,7 +23,7 @@ private:
     
     ProcessFactory factory;
     Scheduler *scheduler;
-    FileReader reader;
+    File file;
     INE5412 cpu;
     
     int clock;
