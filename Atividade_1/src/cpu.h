@@ -7,7 +7,7 @@
 
 class CPU {
 
-private:
+protected:
 
     Process *process;
     Context *process_context;
@@ -25,16 +25,26 @@ public:
     int getTimeRunningCurrentProcess() const;
     int getQuantum() const;
 
-    // TODO Load o contexto ou o processo? Eu acho que o processo torna o código mais fácil, mas faz mais sentido o contexto
-    // PROBLEMA terá que refatorar o scheduling_algorithm
-    void loadProcess(Process *newProcess);
     void setQuantum(int quantum);
-    Process *unloadProcess();
+
+    virtual void loadProcess(Process *newProcess) = 0;
+    virtual Process *unloadProcess() = 0;
     Process *switchProcess(Process *newProcess);
 
-    void execute();
+    virtual void execute() = 0;
 
     int empty();
+
+};
+
+class INE5412 : public CPU {
+
+public:
+
+    void loadProcess(Process *newProcess) override;
+    Process *unloadProcess() override;
+
+    void execute() override;
 
 };
 

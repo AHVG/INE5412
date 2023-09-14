@@ -15,7 +15,7 @@ Process::Process(int _id, int _start, int _duration, int _priority) {
     currentState = NOVO;
     executedTime = 0;
 
-    context = new Context(0xffffffff, 0, 0);
+    context = new Context();
 }
 
 Process::~Process() {
@@ -85,6 +85,11 @@ void Process::setExecutedTime(int _executedTime) {
 int Process::finished() const {
     return getDuration() <= getExecutedTime(); 
 }
+
+void Process::incrementExecutedTime() {    
+    setExecutedTime(getExecutedTime() + 1);
+}
+
 
 // Método que retorna os dados de cada processo
 std::ostream &operator<<(std::ostream& os, const Process& p) {
