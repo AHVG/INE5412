@@ -26,12 +26,11 @@ int main() {
         std::cout << std::endl;
 
         if (option == 7) break;
-        if (option < 0 || 6 < option){
-            customCout("OPCAO INVALIDA\n\n", BRIGHT_RED);
-            continue;
-        }
+        if (option < 0 || 6 < option){ customCout("OPCAO INVALIDA\n\n", BRIGHT_RED); continue;}
+
         if (option == 6) {startInterval = 0; option = 5;}
         else startInterval = option - 1;
+        
         for (int i = startInterval; i < option; i++) {
             customCout("SIMULANDO " + algorithms[i].first + "\n\n", BRIGHT_YELLOW);
             Kernel kernel(algorithms[i].second);

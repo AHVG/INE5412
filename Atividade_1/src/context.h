@@ -1,30 +1,34 @@
 #ifndef _H_CONTEXT
 #define _H_CONTEXT
 
+#include <array>
+#include "register.h"
+
 class Context {
 
 private:
 
-    long int SP;        // stack pointer
-    long int PC;        // program counter
-    long int status;
-    long int gpr[6];    // general purpose registers
+    Register SP;        // stack pointer
+    Register PC;        // program counter
+    Register status;
+    std::array<Register, 6> gpr;    // general purpose registers
 
 public:
 
-    Context(long int _SP, long int _PC, long int _status);
+    Context(Register _SP, Register _PC, Register _status);
+    Context();
 
     ~Context();
 
-    long int getSP() const;
-    long int getPC() const;
-    long int getStatus() const;
-    long int getGpr(int index) const;
+    Register getSP() const;
+    Register getPC() const;
+    Register getStatus() const;
+    Register getGpr(int index) const;
 
-    void setSP(long int _SP);
-    void setPC(long int _PC);
-    void setStatus(long int _status);
-    void setGpr(int index, long int value);
+    void setSP(Register _SP);
+    void setPC(Register _PC);
+    void setStatus(Register _status);
+    void setGpr(int index, Register value);
 
 };
 

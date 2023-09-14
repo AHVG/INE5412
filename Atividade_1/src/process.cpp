@@ -15,7 +15,7 @@ Process::Process(int _id, int _start, int _duration, int _priority) {
     currentState = NOVO;
     executedTime = 0;
 
-    context = new Context(0xffffffff, 0, 0);
+    context = new Context();
 }
 
 Process::~Process() {

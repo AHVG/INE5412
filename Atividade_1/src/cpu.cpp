@@ -53,14 +53,9 @@ Process *CPU::switchProcess(Process *newProcess) {
 
 void CPU::execute(){
     if (process) {
-        process_context->setPC(process_context->getPC() + 1);
-        process_context->setStatus(1);
-        process_context->setSP(process_context->getSP() - 1);
+        // TODO fazer operações aleatórios nos registradores
         timeRunningCurrentProcess++;
         process->setExecutedTime(process->getExecutedTime() + 1);
-        for(int i = 0; i < 6; i++) {
-            process_context->setGpr(i, process_context->getGpr(i) + rand() % 100);
-        }
     }
     runningTime++;
 }
