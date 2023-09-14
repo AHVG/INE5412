@@ -6,33 +6,17 @@
 #include <string>
 #include <vector>
 
-using namespace std;
 
 class ProcessParams
 {
 public:
-	ProcessParams(int c, int d, int p) { 
-		creation_time = c;
-		duration = d;
-		priority = p;
-	}
+	ProcessParams(int c, int d, int p);
 
-	friend ostream &operator<<(ostream& os, const ProcessParams& p) {
-		os << "Creation time = " << p.creation_time << " duration = " << p.duration << " priority = " << p.priority << endl;
-		return os;
-	}
+	friend std::ostream &operator<<(std::ostream& os, const ProcessParams& p);
 	
-	int getCreationTime() const {
-		return creation_time;
-	}
-
-	int getDuration() const {
-		return duration;
-	}
-
-	int getPriority() const {
-		return priority;
-	}
+	int getCreationTime() const;
+	int getDuration() const;
+	int getPriority() const;
 
 private:	
 	int creation_time;
@@ -45,53 +29,18 @@ class File
 
 public:
 
-	File() {
-		myfile.open("entrada.txt");
-		if (!myfile.is_open()) {
-			cout << "Erro ao abrir o arquivo!\n";
-		}
-	}
+	File();
 	
-	~File() {
-		for(int i = 0; i < processes.size() ; i++) {
-			ProcessParams *p = processes[i];
-			delete p;
-		}
-	}
+	~File();
 
-	void read_file() {
+	void read_file();
+	void print_processes_params();
 	
-		int a, b, c;
-		
-		if (!myfile.is_open()) {
-			cout << "Arquivo não está aberto!" << endl;
-		}
-		
-		while (myfile >> a >> b >> c) {
-			ProcessParams *p = new ProcessParams(a, b, c);
-			processes.push_back(p);
-		}
-
-		cout << "Quantidade de processos lidos do arquivo: " << processes.size() << endl;
-	}
-
-	void print_processes_params() {
-		vector<ProcessParams *>::iterator iter = processes.begin();
-
-		for(iter; iter < processes.end(); iter++) {
-			ProcessParams *p = *iter;
-			cout << *p;
-		}
-	}
-
-
-	vector<ProcessParams *> getProcesses() const {
-		return processes;
-	}
+	std::vector<ProcessParams *> getProcesses() const;
 
 private:
-	ifstream myfile; 
-	vector<ProcessParams *> processes;
+	std::ifstream myfile; 
+	std::vector<ProcessParams *> processes;
 };
 
 
