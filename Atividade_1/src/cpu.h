@@ -10,7 +10,7 @@ class CPU {
 protected:
 
     Process *process;
-    Context *process_context;
+    Context<6> *process_context;
     int runningTime;
     int timeRunningCurrentProcess;
     int quantum;

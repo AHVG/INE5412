@@ -4,6 +4,7 @@
 #include <array>
 #include "register.h"
 
+template <int numGPRs>
 class Context {
 
 private:
@@ -11,7 +12,7 @@ private:
     Register SP;        // stack pointer
     Register PC;        // program counter
     Register status;
-    std::array<Register, 6> gpr;    // general purpose registers
+    Register GPRs[numGPRs];    // general purpose registers
 
 public:
 

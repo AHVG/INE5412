@@ -15,7 +15,7 @@ Process::Process(int _id, int _start, int _duration, int _priority) {
     currentState = NOVO;
     executedTime = 0;
 
-    context = new Context();
+    context = new Context<6>();
 }
 
 Process::~Process() {
@@ -50,7 +50,7 @@ int Process::getExecutedTime() const {
     return executedTime;
 }
 
-Context *Process::getContext() const {
+Context<6> *Process::getContext() const {
     return context;
 }
 

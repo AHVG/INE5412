@@ -17,7 +17,7 @@ private:
     int priority;
     State currentState;
     int executedTime;
-    Context *context;
+    Context<6> *context;
 
 public:
 
@@ -32,7 +32,7 @@ public:
     int getPriority() const;
     State getCurrentState() const;
     int getExecutedTime() const;
-    Context *getContext() const;
+    Context<6> *getContext() const;
 
     void setId(int _id);
     void setStart(int _start);
