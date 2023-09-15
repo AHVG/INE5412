@@ -56,15 +56,6 @@ void Kernel::initialize() {
 void Kernel::run() { 
     initialize();
     customCout("Executando os processos...\n\n", BRIGHT_GREEN);
-    // No output gerado para os processos a cor vermelha representa que
-    // o processo foi iniciado e está pronto para ser executado
-    // a cor verde representa que o processo está sendo executado
-    int width = std::log10(PCB.size()) + 1;
-    setColor(BRIGHT_WHITE);
-    std::cout << "tempo ";
-    for (auto p : PCB) std::cout << "P" << std::setw(width) << std::setfill('0') << p->getId() << " ";
-    std::cout << std::setfill(' ') << std::endl;
-    resetColor();
 
     while (1) {
 
@@ -76,9 +67,6 @@ void Kernel::run() {
         
         // Executando mais um ciclo do processo
         cpu.execute();
-
-        // Mostrando no console o atual estado dos processos 
-        printState();
 
         // Contando mais um ciclo
         clock++;
@@ -112,6 +100,9 @@ void Kernel::update() {
         cpu.switchProcess(currentProcessRunning);
         contextSwitches++;
     }
+    std::vector<State> line;
+    for (auto p : PCB) line.push_back(p->getCurrentState());
+    executionHistory.push_back(line);
 }
 
 // Método responsável por atualizar a lista de processos prontos
@@ -130,24 +121,6 @@ void Kernel::updateReadyProcesses() {
     });
     newProcesses.resize(std::distance(newProcesses.begin(), newEnd));
 
-}
-
-// Metodo responsavel por mostrar no console o estado atual dos processos
-void Kernel::printState() {
-    std::string interval = std::to_string(clock) + "-" + std::to_string(clock + 1);
-    setColor(BRIGHT_WHITE);
-    std::cout << std::setw(5) << interval << " ";
-    resetColor();
-    
-    int width = std::log10(PCB.size()) + 1;
-    for (auto p : PCB) {
-        int state = p->getCurrentState();
-        if (state == EXECUTANDO) {customCout("  ", WEAK_GREEN_BACKGROUND); std::cout << std::setw(width) << " ";}
-        else if (state == NOVO) std::cout << std::setw(width + 2) << " ";
-        else if (state == PRONTO) {customCout("  ", WEAK_RED_BACKGROUND);  std::cout << std::setw(width) << " ";}
-        else std::cout << std::setw(width + 2) << " ";
-    }
-    std::cout << std::endl;
 }
 
 std::vector<std::vector<State>> Kernel::getExecutionHistory() const {

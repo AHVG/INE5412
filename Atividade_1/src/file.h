@@ -43,5 +43,4 @@ private:
 	std::vector<ProcessParams *> processes;
 };
 
-
 #endif

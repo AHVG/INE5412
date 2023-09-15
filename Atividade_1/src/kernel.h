@@ -37,8 +37,6 @@ private:
     
     void updateReadyProcesses();
     void update();
-    
-    void printState();
 
 public:
     Kernel(SchedulingAlgorithm *algorithm);
