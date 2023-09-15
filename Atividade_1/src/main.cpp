@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "scheduling_algorithm.h"
+#include "analyzer.h"
 #include "kernel.h"
 #include "utils.h"
 
@@ -36,6 +37,8 @@ int main() {
             customCout("SIMULANDO " + algorithms[i].first + "\n\n", BRIGHT_YELLOW);
             Kernel kernel(algorithms[i].second);
             kernel.run();
+            Analyzer analyzer;
+            analyzer.analyze(&kernel);
             customCout("FIM DA SIMULACAO\n\n", BRIGHT_YELLOW);
         }
     }

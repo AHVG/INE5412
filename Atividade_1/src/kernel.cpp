@@ -6,7 +6,6 @@
 
 
 #include "scheduling_algorithm.h"
-#include "analyzer.h"
 #include "process.h"
 #include "kernel.h"
 #include "utils.h"
@@ -21,6 +20,7 @@ Kernel::Kernel(SchedulingAlgorithm *algorithm) {
 }
 
 Kernel::~Kernel() {
+    for (long unsigned int i = 0; i < PCB.size(); i++) delete PCB[i];
     delete scheduler;
 }
 
@@ -83,16 +83,7 @@ void Kernel::run() {
         // Contando mais um ciclo
         clock++;
     }
-    close();
-}
-
-// Método responsável por encerrar o kernel
-// Analisa as metricas de cada algoritmo de escalonamento usando a classe Analyzer
-void Kernel::close() {
     customCout("\nEncerrando kernel...\n\n", BRIGHT_GREEN);
-    Analyzer analyzer;
-    analyzer.analyze(this);
-    for (long unsigned int i = 0; i < PCB.size(); i++) delete PCB[i];
 }
 
 // Método responsável por atualizar o estado dos processsos
@@ -157,6 +148,10 @@ void Kernel::printState() {
         else std::cout << std::setw(width + 2) << " ";
     }
     std::cout << std::endl;
+}
+
+std::vector<std::vector<State>> Kernel::getExecutionHistory() const {
+    return executionHistory;
 }
 
 std::vector<Process *> Kernel::getExecutedProcesses() const {
