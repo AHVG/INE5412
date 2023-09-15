@@ -15,6 +15,7 @@ class Kernel {
 
 private:
 
+    std::vector<std::vector<State>> executionHistory;
     std::vector<Process *> executedProcesses;
     std::vector<Process *> readyProcesses;
     std::vector<Process *> newProcesses;
@@ -33,12 +34,9 @@ private:
     // Desacopla a lógica de print do kernel, mas será que faz sentido?
 
     void initialize();  // Criará os processos e etc
-    void close();       // Destrói tudo que foi criado
     
     void updateReadyProcesses();
     void update();
-    
-    void printState();
 
 public:
     Kernel(SchedulingAlgorithm *algorithm);
@@ -46,7 +44,7 @@ public:
 
     void run();         // Executa os processo
 
-    // Será que precisa get para todos?
+    std::vector<std::vector<State>> getExecutionHistory() const;
     std::vector<Process *> getExecutedProcesses() const;
     std::vector<Process *> getReadyProcesses() const;
     std::vector<Process *> getNewProcesses() const;
