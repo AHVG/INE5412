@@ -12,7 +12,7 @@ private:
     Register SP;        // stack pointer
     Register PC;        // program counter
     Register status;
-    Register GPRs[numGPRs];    // general purpose registers
+    std::array<Register, numGPRs> GPRs;    // general purpose registers
 
 public:
 
