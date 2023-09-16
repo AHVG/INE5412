@@ -1,6 +1,7 @@
 
 #include "register.h"
 
+// Classe que representa um registrador
 Register::Register() {
     for (auto &byte : bytes) byte = 0xff;
 }

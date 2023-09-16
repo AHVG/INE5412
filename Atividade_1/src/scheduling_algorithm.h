@@ -13,7 +13,6 @@ class SchedulingAlgorithm {
 
 public:
     
-    // TODO ver sobre construtores e destrutores de classe abstrata
     SchedulingAlgorithm();
     
     virtual ~SchedulingAlgorithm();

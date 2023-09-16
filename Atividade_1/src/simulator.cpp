@@ -8,7 +8,7 @@
 #include "kernel.h"
 #include "utils.h"
 
-
+// Classe simulator que ficara responsavel por simular os algoritmos de escalonamento
 Simulator::Simulator() : algorithms({{"FCFS", new FCFS()},
                                     {"SJF", new SJF()},
                                     {"PRIORITY", new Priority()},

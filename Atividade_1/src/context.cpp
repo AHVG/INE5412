@@ -1,7 +1,7 @@
 #include "context.h"
 
 // Classe responsável por guardar o contexto de cada processo
-
+// Template para o número de registradores
 template <int numGPRs>
 Context<numGPRs>::Context(Register _SP, Register _PC, Register _status) : SP(_SP), PC(_PC), status(_status) {}
 
