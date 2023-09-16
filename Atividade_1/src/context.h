@@ -24,12 +24,12 @@ public:
     Register getSP() const;
     Register getPC() const;
     Register getStatus() const;
-    Register getGpr(int index) const;
+    Register getGPRs(int index) const;
 
     void setSP(Register _SP);
     void setPC(Register _PC);
     void setStatus(Register _status);
-    void setGpr(int index, Register value);
+    void setGPRs(int index, Register value);
 
 };
 

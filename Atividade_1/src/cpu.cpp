@@ -67,7 +67,7 @@ void INE5412::execute(){
         process_context->setStatus(rAux);
         for (int i = 0; i < 8; i++) aux[i] = rand() % 256;
         rAux.setBytes(aux);
-        for (int i = 0; i < 6; i++) process_context->setGpr(i, rAux);
+        for (int i = 0; i < 6; i++) process_context->setGPRs(i, rAux);
         timeRunningCurrentProcess++;
         process->incrementExecutedTime();
     }

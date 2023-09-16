@@ -27,12 +27,12 @@ Register Context<numGPRs>::getStatus() const {
 }
 
 template <int numGPRs>
-Register Context<numGPRs>::getGpr(int index) const {
+Register Context<numGPRs>::getGPRs(int index) const {
     return GPRs[index % 6];
 }
 
 template <int numGPRs>
-void Context<numGPRs>::setGpr(int index, Register value) {
+void Context<numGPRs>::setGPRs(int index, Register value) {
     GPRs[index % 6] = value;
 }
 
