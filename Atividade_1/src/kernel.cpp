@@ -46,7 +46,7 @@ void Kernel::initialize() {
     for (auto p : PCB) std::cout << *p << std::endl;
     std::cout << std::endl;
     resetColor();
-
+    cpu.setQuantum(2);
     clock = 0;
     contextSwitches = 0;
 }

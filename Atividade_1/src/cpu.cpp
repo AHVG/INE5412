@@ -7,7 +7,7 @@ CPU::CPU() {
     process = nullptr;
     runningTime = 0;
     timeRunningCurrentProcess = 0;
-    quantum = 2;
+    quantum = 0;
 }
 
 CPU::~CPU() {}
