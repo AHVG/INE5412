@@ -2,11 +2,15 @@
 ## Simulador de algoritmos de escalonamento
 
 ### Como rodar?
-#### 1 método
-Digite na pasta raiz ./run.sh que automaticamente será feitoa compilação do programa e a execução.
-#### 2 método
-Se o objetivo é testar o program, digite o ./test.sh para o valgrind executar os testes na memória.
-#### 3 método
+#### 1o método
+Digite na pasta raiz ./run.sh que automaticamente será feito a compilação do programa e a execução.
+#### 2o método
+Se o objetivo é testar o programa, digite o ./test.sh para o valgrind executar os testes na memória.
+Caso você não possua o valgrind, basta digitar
+
+``` sudo apt-get install valgrind ```
+
+#### 3o método
 Se o desejo é compilar e rodar por si mesmo, faça make all e em seguida ./bin/atividade_1
 
 ### Como funciona?
