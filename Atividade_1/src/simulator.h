@@ -9,6 +9,8 @@
 
 class Simulator {
 
+private:
+
     std::vector<std::pair<std::string, SchedulingAlgorithm *>> algorithms;
 
     void runAnAlgorithm(long unsigned int index);
