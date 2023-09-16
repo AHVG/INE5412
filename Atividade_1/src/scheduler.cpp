@@ -21,10 +21,12 @@ SchedulingAlgorithm *Scheduler::getAlgorithm() const {
 void Scheduler::setAlgorithm(SchedulingAlgorithm *_algorithm) {
     algorithm = _algorithm;
 }
+
 // Verifica se é hora de trocar de processo
 int Scheduler::isItTimeToSwitch(CPU *cpu, std::vector<Process *> processes) {
     return algorithm->isItTimeToSwitch(cpu, processes);
 }
+
 // Pega o próximo processo a ser executado
 Process *Scheduler::getNextProcess(std::vector<Process *> &processes) {
     if (processes.empty()) return nullptr;

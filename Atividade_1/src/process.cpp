@@ -90,7 +90,6 @@ void Process::incrementExecutedTime() {
     setExecutedTime(getExecutedTime() + 1);
 }
 
-
 // Método que retorna os dados de cada processo
 std::ostream &operator<<(std::ostream& os, const Process& p) {
     os << "ID: " << p.getId() << ", Start: " << p.getStart() << ", Duration: " << p.getDuration() << ", Priority: " << p.getPriority() << ", Executed Time: " << p.getExecutedTime() << ", Current State: " << p.getCurrentState();
