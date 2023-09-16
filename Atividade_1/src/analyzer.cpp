@@ -40,7 +40,7 @@ void Analyzer::analyze(Kernel *kernel) {
     double contextSwitches = kernel->getContextSwitches();
 
     // Mostrando as estatísticas
-    customCout("METRICAS\n\n", BRIGHT_RED);
+    customCout("DIAGRAMA DE TEMPO\n\n", BRIGHT_RED);
     int width = std::log10(pcb.size()) + 1;
     setColor(BRIGHT_WHITE);
     std::cout << "tempo ";
@@ -66,7 +66,9 @@ void Analyzer::analyze(Kernel *kernel) {
         }
         std::cout << std::endl;
     }
+    std::cout << std::endl << std::endl;
 
+    customCout("METRICAS\n\n", BRIGHT_RED);
     std::cout << GREEN << "      Tempo de resposta por processo: " << WHITE;
     for (long unsigned int i = 0; i < turnaroundTimePerProcess.size(); i++) 
         std::cout << "P" << i + 1 << " - " << turnaroundTimePerProcess[i] << " ciclos ";

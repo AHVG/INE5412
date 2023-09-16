@@ -36,6 +36,7 @@ private:
     void initialize();  // Criará os processos e etc
     
     void updateReadyProcesses();
+    void fixingProcessesWithTimeZero();
     void update();
 
 public:

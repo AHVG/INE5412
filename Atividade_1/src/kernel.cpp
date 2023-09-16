@@ -49,6 +49,9 @@ void Kernel::initialize() {
     cpu.setQuantum(2);
     clock = 0;
     contextSwitches = 0;
+    fixingProcessesWithTimeZero();  // Processos com tempo zero não são carregados para cpu
+                                    // São colocados como terminado e inseridos na lista de processos executados
+                                    // Desse modo, não é consumido ciclos da cpu.
 }
 
 // Método responsável pela execucao do Kernel
@@ -70,6 +73,9 @@ void Kernel::run() {
 
         // Contando mais um ciclo
         clock++;
+        std::vector<State> line;
+        for (auto p : PCB) line.push_back(p->getCurrentState());
+        executionHistory.push_back(line);
     }
     customCout("\nEncerrando kernel...\n\n", BRIGHT_GREEN);
 }
@@ -100,9 +106,6 @@ void Kernel::update() {
         cpu.switchProcess(currentProcessRunning);
         contextSwitches++;
     }
-    std::vector<State> line;
-    for (auto p : PCB) line.push_back(p->getCurrentState());
-    executionHistory.push_back(line);
 }
 
 // Método responsável por atualizar a lista de processos prontos
@@ -121,6 +124,19 @@ void Kernel::updateReadyProcesses() {
     });
     newProcesses.resize(std::distance(newProcesses.begin(), newEnd));
 
+}
+
+void Kernel::fixingProcessesWithTimeZero() {
+    std::copy_if(newProcesses.begin(), newProcesses.end(), std::back_inserter(executedProcesses), [](Process *p) {
+        int result = p->getDuration() == 0;
+        if (result) {p->setCurrentState(TERMINADO); p->setStart(0);}
+        return result;
+    });
+
+    auto newEnd = std::remove_if(newProcesses.begin(), newProcesses.end(), [](Process *p) {
+        return p->getDuration() == 0;
+    });
+    newProcesses.resize(std::distance(newProcesses.begin(), newEnd));
 }
 
 std::vector<std::vector<State>> Kernel::getExecutionHistory() const {

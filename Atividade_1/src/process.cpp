@@ -11,7 +11,7 @@ Process::Process(int _id, int _start, int _duration, int _priority) {
     duration = _duration;
     priority = _priority;
 
-    end = -1;
+    end = 0;
     currentState = NOVO;
     executedTime = 0;
 
