@@ -25,17 +25,18 @@ void Simulator::run() {
     for(;;) {
 
         customCout("INSIRA O NOME DO ALGORITMO DE ESCALONAMENTO QUE DESEJA SIMULAR\n", BRIGHT_CYAN);
-        customCout("OPCOES: 1 -> FCFS, 2 -> SJF, 3 -> PRIORITY, 4 -> PRIORITY WITH PREEMPTION,  5 -> ROUND ROBIN, 6 -> RODAR TODOS, -1 -> SAIR\n", BRIGHT_CYAN);
+        customCout("\n 0 -> FCFS\n 1 -> SJF\n 2 -> PRIORITY\n 3 -> PRIORITY WITH PREEMPTION\n 4 -> ROUND ROBIN\n 5 -> RODAR TODOS\n-1 -> SAIR\n", BRIGHT_CYAN);
         
         int option;
+        std::cout << "> ";
         std::cin >> option;
         std::cout << std::endl;
 
         if (option == -1) break; // Usuário quer sair
-        if (option < 1 || 6 < option) {customCout("OPCAO INVALIDA\n\n", BRIGHT_RED); continue;} // Opção não existe, tenta novamente
+        if (option < 0 || 5 < option) {customCout("OPCAO INVALIDA\n\n", BRIGHT_RED); continue;} // Opção não existe, tenta novamente
 
-        if (option == 6) for (int i = 0; i < 5; i++) runAnAlgorithm(i);
-        else runAnAlgorithm(option - 1);
+        if (option == 5) for (int i = 0; i < 5; i++) runAnAlgorithm(i);
+        else runAnAlgorithm(option);
     }
 
     customCout("FIM DAS SIMULACOES\n\n", BRIGHT_CYAN);
