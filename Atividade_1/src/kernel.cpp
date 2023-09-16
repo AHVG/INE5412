@@ -73,6 +73,9 @@ void Kernel::run() {
 
         // Contando mais um ciclo
         clock++;
+        std::vector<State> line;
+        for (auto p : PCB) line.push_back(p->getCurrentState());
+        executionHistory.push_back(line);
     }
     customCout("\nEncerrando kernel...\n\n", BRIGHT_GREEN);
 }
@@ -103,9 +106,6 @@ void Kernel::update() {
         cpu.switchProcess(currentProcessRunning);
         contextSwitches++;
     }
-    std::vector<State> line;
-    for (auto p : PCB) line.push_back(p->getCurrentState());
-    executionHistory.push_back(line);
 }
 
 // Método responsável por atualizar a lista de processos prontos
