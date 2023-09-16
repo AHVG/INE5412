@@ -39,9 +39,6 @@ void Analyzer::analyze(Kernel *kernel) {
     // Número de trocas de contexto
     double contextSwitches = kernel->getContextSwitches();
 
-    // No output gerado para os processos a cor vermelha representa que
-    // o processo foi iniciado e está pronto para ser executado
-    // a cor verde representa que o processo está sendo executado
     // Mostrando as estatísticas
     customCout("METRICAS\n\n", BRIGHT_RED);
     int width = std::log10(pcb.size()) + 1;
@@ -51,6 +48,9 @@ void Analyzer::analyze(Kernel *kernel) {
     std::cout << std::setfill(' ') << std::endl;
     resetColor();
     
+    // No output gerado para os processos a cor vermelha representa que
+    // o processo foi iniciado e está pronto para ser executado
+    // a cor verde representa que o processo está sendo executado
     for (long unsigned int i = 0; i < executionHistory.size(); i++) {
         std::string interval = std::to_string(i) + "-" + std::to_string(i + 1);
         setColor(BRIGHT_WHITE);
