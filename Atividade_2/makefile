@@ -1,5 +1,5 @@
 # Variáveis
-NAME = atividade_1
+NAME = atividade_2
 CXX = g++
 CXXFLAGS = -Wall -g
 SRC_DIR = src

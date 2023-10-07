@@ -2,11 +2,11 @@
 #define _H_ALGORITHM
 
 #include <iostream>
-#include <queue>
+#include <vector>
 
 #include "page.h"
 
-class Algorithm {
+class ReplacementAlgorithm {
 
 protected:
 
@@ -14,21 +14,21 @@ protected:
 
 public:
 
-    Algorithm();
-    Algorithm(std::size_t _RAMFrames);
+    ReplacementAlgorithm();
+    ReplacementAlgorithm(std::size_t _RAMFrames);
     
-    virtual ~Algorithm();
+    virtual ~ReplacementAlgorithm();
 
     virtual int accessMemory(std::size_t page) = 0;
 
 };
 
 
-class FifoAlgorithm : public Algorithm{
+class FifoAlgorithm : public ReplacementAlgorithm {
 
 private:
 
-    std::queue<Page> pages;
+    std::vector<Page> pages;
 
 public:
 
