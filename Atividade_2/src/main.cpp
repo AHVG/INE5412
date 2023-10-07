@@ -4,6 +4,7 @@
 #include <iomanip>
 
 #include "analyzer.h"
+#include "page.h"
 
 int main(int argc, char *argv[]) {
 
@@ -19,18 +20,19 @@ int main(int argc, char *argv[]) {
     std::cout << "File content (./entradas/entrada.txt): " << "\n\n";
     
     std::string line;
-    int number_of_line = 0;
+    int numberOfLine = 0;
 
     // Trocar por !(feof(std::stdin) = line)?
     while (std::cin >> line) {
-        std::cout << std::setw(5) << number_of_line + 1 << ": " << line << "\n";
-        number_of_line++;
+        std::cout << std::setw(5) << numberOfLine + 1 << ": " << line << "\n";
+        numberOfLine++;
     }
 
     // Entrada vsim-belady não corresponde ao que está no documento possívelmente
     // TODO: Testar novametne para o algoritmo FIFO
     Analyzer analyzer;
-    analyzer.analyze(frames, number_of_line, 17, 15, 11);
+    analyzer.analyze(frames, numberOfLine, 17, 15, 11);
+
 
     return 0;
 }
