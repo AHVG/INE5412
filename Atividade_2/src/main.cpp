@@ -17,13 +17,18 @@ int main(int argc, char *argv[]) {
 
     std::cout << "Number of RAM frames: " << frames << "\n\n";
     std::cout << "File content (./entradas/entrada.txt): " << "\n\n";
+    
     std::string line;
     int number_of_line = 0;
+
+    // Trocar por !(feof(std::stdin) = line)?
     while (std::cin >> line) {
         std::cout << std::setw(5) << number_of_line + 1 << ": " << line << "\n";
         number_of_line++;
     }
 
+    // Entrada vsim-belady não corresponde ao que está no documento possívelmente
+    // TODO: Testar novametne para o algoritmo FIFO
     Analyzer analyzer;
     analyzer.analyze(frames, number_of_line, 17, 15, 11);
 
