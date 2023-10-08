@@ -5,22 +5,23 @@
 
 class Page {
 
+private:
+
     std::size_t id;
-    std::size_t lastAcess;
+    std::size_t tag;
 
 public:
 
     Page();
     Page(std::size_t _id);
-    Page(std::size_t _id, std::size_t _lastAcess);
     Page(const Page &other);
     
     ~Page();
 
     std::size_t getId() const;
-    std::size_t getLastAcess() const;
+    std::size_t getTag() const;  
 
-    void setLastAcess(std::size_t newLastAcess);
+    void setTag(std::size_t _tag);  
 
     friend std::ostream &operator<<(std::ostream& os, const Page& page);
 
