@@ -1,2 +1,2 @@
 make all
-./bin/atividade_1 4 < ./entradas/entrada.txt
+./bin/atividade_2 4 < ./entradas/entrada.txt
