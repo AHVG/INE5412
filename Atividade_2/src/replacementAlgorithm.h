@@ -24,6 +24,8 @@ public:
 
     virtual int accessMemory(std::size_t page) = 0;
 
+    int full();
+
 };
 
 
@@ -52,6 +54,20 @@ public:
 
     int accessMemory(std::size_t page);
 
+};
+
+class OPTAlgorithm : public ReplacementAlgorithm {
+
+public:
+    OPTAlgorithm();
+    OPTAlgorithm(std::size_t _RAMFrames);
+
+    ~OPTAlgorithm();
+
+    int accessMemory(std::size_t page);
+    void refreshTags(std::vector<std::size_t> lines, std::size_t index);
+    std::size_t findNextOcurrence(std::vector<std::size_t> lines, std::size_t index, std::size_t id);
+    std::size_t getPageWithMaxTag();
 };
 
 #endif
