@@ -2,9 +2,10 @@
 #include "replacementAlgorithm.h"
 #include <cstdio>
 #include <vector>
+#include <chrono>
 
 void Simulator::run(std::size_t frames) {
-
+    auto start_time = std::chrono::high_resolution_clock::now();
     std::size_t pfsFIFO = 0;
     std::size_t pfsLRU = 0;
     std::size_t pfsOPT = 0;
@@ -25,7 +26,7 @@ void Simulator::run(std::size_t frames) {
         std::size_t pageId = lines[i];
         pfsFIFO += !fifo.accessMemory(pageId);
         pfsLRU += !lru.accessMemory(pageId);
-        if (opt.full())
+        if (opt.full() && !opt.in(pageId))
             //TODO: se a lista estiver cheia e o elemento que eu quiser inserir ja esta na lista, ele nao precisaria chamar o refreshTags
             opt.refreshTags(lines, i);
         pfsOPT += !opt.accessMemory(pageId);
@@ -38,4 +39,7 @@ void Simulator::run(std::size_t frames) {
     printf("FIFO: %lu PFs\n", pfsFIFO);
     printf("LRU: %lu PFs\n", pfsLRU);
     printf("OPT: %lu PFs\n", pfsOPT);
-}
+    auto end_time = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end_time - start_time;
+    printf("Tempo de execução: %f segundos\n", duration.count());
+}   

@@ -68,6 +68,7 @@ public:
     void refreshTags(std::vector<std::size_t> lines, std::size_t index);
     std::size_t findNextOcurrence(std::vector<std::size_t> lines, std::size_t index, std::size_t id);
     std::size_t getPageWithMaxTag();
+    int in(std::size_t id);
 };
 
 #endif
