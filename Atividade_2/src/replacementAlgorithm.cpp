@@ -61,6 +61,7 @@ int LRUAlgorithm::accessMemory(std::size_t page) {
     // Caso page fault, retira o ultimo elemento da lista e insere o novo elemento no inicio da lista
     // Caso ele acessar uma pagina que ja estava na lista, joga esse elemento para o inicio da lista
  
+    // TODO: criar func pra nao replicar codigo
     auto it = std::find_if(pages.begin(), pages.end(), [page] (const std::size_t &p) {
         return p == page;
     });
@@ -92,19 +93,21 @@ int OPTAlgorithm::accessMemory(std::size_t page) {
     // Caso ele acessar uma pagina que ja estava na lista, nao faz nada
 
     currentLine++;
+
     auto it = std::find_if(pages.begin(), pages.end(), [page] (const std::size_t &p) {
         return p == page;
     });
 
-    if(it != pages.end()){
-        return 1;
-    }
+    if(it != pages.end()) return 1;
+
     if(!full()) {
         pages.push_back(page);
         return 0;
     }
+
     std::size_t pageToErase = 0;
     std::size_t distance = 0;
+    
     for(std::size_t i : pages){
         std::size_t nextOcurrence = findNextOcurrence(lines, currentLine, i);
         if(!nextOcurrence){
@@ -125,7 +128,7 @@ std::size_t OPTAlgorithm::findNextOcurrence(std::vector<std::size_t> lines, std:
 
     // Encontra a proxima ocorrencia de uma pagina
     // Retorna o indice da proxima ocorrencia
-    // Se nao houver proxima ocorrencia, retorna -1
+    // Se nao houver proxima ocorrencia, retorna 0
 
     for(std::size_t i = index; i < lines.size(); i++) if(lines[i] == id) return i;
     return 0;
