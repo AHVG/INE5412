@@ -20,6 +20,20 @@ int ReplacementAlgorithm::full() {
     return pages.size() == RAMFrames;
 }
 
+auto ReplacementAlgorithm::containsPage(std::size_t page) {
+    return std::find_if(pages.begin(), pages.end(), [page] (const std::size_t &p) {
+        return p == page;
+    });
+}
+
+void ReplacementAlgorithm::removePage() {
+    if (full()) pages.erase(pages.begin());
+}
+
+void ReplacementAlgorithm::addPage(std::size_t page) {
+    pages.push_back(page);
+}
+
 FIFOAlgorithm::FIFOAlgorithm() : ReplacementAlgorithm() {}
 
 
@@ -35,13 +49,9 @@ int FIFOAlgorithm::accessMemory(std::size_t page) {
     // Caso page fault, retira o primeiro elemento da lista e insere o novo elemento no final da lista
     // Caso ele acessar uma pagina que ja estava na lista, nao faz nada
 
-    auto it = std::find_if(pages.begin(), pages.end(), [page] (const std::size_t &p) {
-        return p == page;
-    });
-
-    if (it == pages.end()) {
-        if (full()) pages.erase(pages.begin());
-        pages.push_back(page);
+    if (containsPage(page) == pages.end()) {
+        removePage();
+        addPage(page);
         return 0;
     }
 
@@ -60,20 +70,14 @@ int LRUAlgorithm::accessMemory(std::size_t page) {
     // LRU: Least Recently Used
     // Caso page fault, retira o ultimo elemento da lista e insere o novo elemento no inicio da lista
     // Caso ele acessar uma pagina que ja estava na lista, joga esse elemento para o inicio da lista
- 
-    // TODO: criar func pra nao replicar codigo
-    auto it = std::find_if(pages.begin(), pages.end(), [page] (const std::size_t &p) {
-        return p == page;
-    });
-
+    auto it = containsPage(page);
     if (it == pages.end()) {
-        if (full()) pages.erase(pages.begin());
-        pages.push_back(page);
+        removePage();
+        addPage(page);
         return 0;
     }
-    std::size_t p = *it;
     pages.erase(it);
-    pages.push_back(p);
+    pages.push_back(page);
 
     return 1;
 }
@@ -94,14 +98,10 @@ int OPTAlgorithm::accessMemory(std::size_t page) {
 
     currentLine++;
 
-    auto it = std::find_if(pages.begin(), pages.end(), [page] (const std::size_t &p) {
-        return p == page;
-    });
-
-    if(it != pages.end()) return 1;
+    if(containsPage(page) != pages.end()) return 1;
 
     if(!full()) {
-        pages.push_back(page);
+        addPage(page);
         return 0;
     }
 

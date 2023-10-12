@@ -25,6 +25,10 @@ public:
 
     int full();
 
+    auto containsPage(std::size_t page);
+    void removePage();
+    void addPage(std::size_t page);
+
 };
 
 
