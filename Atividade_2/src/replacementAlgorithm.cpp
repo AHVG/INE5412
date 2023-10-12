@@ -12,7 +12,7 @@ ReplacementAlgorithm::ReplacementAlgorithm(std::size_t _RAMFrames) : RAMFrames(_
 ReplacementAlgorithm::~ReplacementAlgorithm() {}
 
 
-std::vector<Page> ReplacementAlgorithm::getPages() const {
+std::vector<std::size_t> ReplacementAlgorithm::getPages() const {
     return pages;
 }
 
@@ -35,14 +35,13 @@ int FIFOAlgorithm::accessMemory(std::size_t page) {
     // Caso page fault, retira o primeiro elemento da lista e insere o novo elemento no final da lista
     // Caso ele acessar uma pagina que ja estava na lista, nao faz nada
 
-    auto it = std::find_if(pages.begin(), pages.end(), [page] (const Page &p) {
-        return p.getId() == page;
+    auto it = std::find_if(pages.begin(), pages.end(), [page] (const std::size_t &p) {
+        return p == page;
     });
 
     if (it == pages.end()) {
         if (full()) pages.erase(pages.begin());
-        Page aux(page);
-        pages.push_back(aux);
+        pages.push_back(page);
         return 0;
     }
 
@@ -62,26 +61,24 @@ int LRUAlgorithm::accessMemory(std::size_t page) {
     // Caso page fault, retira o ultimo elemento da lista e insere o novo elemento no inicio da lista
     // Caso ele acessar uma pagina que ja estava na lista, joga esse elemento para o inicio da lista
  
-    auto it = std::find_if(pages.begin(), pages.end(), [page] (const Page &p) {
-        return p.getId() == page;
+    auto it = std::find_if(pages.begin(), pages.end(), [page] (const std::size_t &p) {
+        return p == page;
     });
 
     if (it == pages.end()) {
         if (full()) pages.erase(pages.begin());
-        Page aux(page);
-        pages.push_back(aux);
+        pages.push_back(page);
         return 0;
     }
-    
-    Page aux(*it);
+    std::size_t p = *it;
     pages.erase(it);
-    pages.push_back(aux);
+    pages.push_back(p);
 
     return 1;
 }
 
 
-OPTAlgorithm::OPTAlgorithm(std::size_t _RAMFrames) : ReplacementAlgorithm(_RAMFrames) {}
+OPTAlgorithm::OPTAlgorithm(std::size_t _RAMFrames, std::vector<std::size_t> _lines) : ReplacementAlgorithm(_RAMFrames), lines(_lines), currentLine(-1)  {}
 OPTAlgorithm::OPTAlgorithm() : ReplacementAlgorithm() {}  
 
 OPTAlgorithm::~OPTAlgorithm() {}
@@ -94,31 +91,34 @@ int OPTAlgorithm::accessMemory(std::size_t page) {
     // Ou seja, o elemento com maior tag
     // Caso ele acessar uma pagina que ja estava na lista, nao faz nada
 
-    auto it = std::find_if(pages.begin(), pages.end(), [page] (const Page &p) {
-        return p.getId() == page;
+    currentLine++;
+    auto it = std::find_if(pages.begin(), pages.end(), [page] (const std::size_t &p) {
+        return p == page;
     });
 
-    if (it == pages.end()) {
-        if (full()) pages.erase(pages.begin() + getPageWithMaxTag());
-        Page aux(page);
-        pages.push_back(aux);
+    if(it != pages.end()){
+        return 1;
+    }
+    if(!full()) {
+        pages.push_back(page);
         return 0;
     }
-    return 1;
-}
-
-void OPTAlgorithm::refreshTags(std::vector<std::size_t> lines ,std::size_t index) {
-
-    // Atualiza as tags das paginas que estao na lista de paginas a partir do indice que deu page fault
-    // A tag eh a distancia que a pagina vai ser acessada novamente
-    // Se a pagina nao for acessada novamente, a tag eh 0
-    
-    for(std::size_t i = 0; i < pages.size(); i++){
-        std::size_t currentId = pages[i].getId();
-        std::size_t nextOcurrence = findNextOcurrence(lines, index, currentId);
-        if(!nextOcurrence) pages[i].setTag(0);
-        else pages[i].setTag(nextOcurrence - index);
+    std::size_t pageToErase = 0;
+    std::size_t distance = 0;
+    for(std::size_t i : pages){
+        std::size_t nextOcurrence = findNextOcurrence(lines, currentLine, i);
+        if(!nextOcurrence){
+            pageToErase = i;
+            break;
+        }
+        if(nextOcurrence > distance){
+            pageToErase = i;
+            distance = nextOcurrence;
+        }
     }
+    pages.erase(std::find(pages.begin(), pages.end(), pageToErase));
+    pages.push_back(page);
+    return 0;
 }
 
 std::size_t OPTAlgorithm::findNextOcurrence(std::vector<std::size_t> lines, std::size_t index, std::size_t id) {
@@ -129,27 +129,4 @@ std::size_t OPTAlgorithm::findNextOcurrence(std::vector<std::size_t> lines, std:
 
     for(std::size_t i = index; i < lines.size(); i++) if(lines[i] == id) return i;
     return 0;
-}
-
-std::size_t OPTAlgorithm::getPageWithMaxTag(){
-
-    // Encontra a pagina que vai demorar mais para ser acessada
-    // Retorna o indice dessa pagina
-    
-    std::size_t maxTag = 0;
-    std::size_t index = 0;
-    for(std::size_t i = 0; i < pages.size(); i++){
-        if(pages[i].getTag() == 0) return i;
-        if(pages[i].getTag() > maxTag){
-            maxTag = pages[i].getTag();
-            index = i;
-        }
-    }
-    return index;
-}
-
-int OPTAlgorithm::in(std::size_t id) {
-    return std::find_if(pages.begin(), pages.end(), [id] (const Page &p) {
-        return p.getId() == id;
-    }) != pages.end();
 }
