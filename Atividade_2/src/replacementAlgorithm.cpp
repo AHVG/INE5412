@@ -79,7 +79,7 @@ int LRUAlgorithm::accessMemory(std::size_t page) {
 }
 
 
-OPTAlgorithm::OPTAlgorithm(std::size_t _RAMFrames, std::vector<std::size_t> _lines) : ReplacementAlgorithm(_RAMFrames), lines(_lines), currentLine(-1)  {}
+OPTAlgorithm::OPTAlgorithm(std::size_t _RAMFrames, std::vector<std::size_t> _lines) : ReplacementAlgorithm(_RAMFrames), lines(_lines), currentLine(-1)  {entrySize = lines.size();}
 OPTAlgorithm::OPTAlgorithm() : ReplacementAlgorithm() {}  
 
 OPTAlgorithm::~OPTAlgorithm() {}
@@ -109,7 +109,7 @@ int OPTAlgorithm::accessMemory(std::size_t page) {
     std::size_t distance = 0;
     
     for(std::size_t i : pages){
-        std::size_t nextOcurrence = findNextOcurrence(lines, currentLine, i);
+        std::size_t nextOcurrence = findNextOcurrence(currentLine, i);
         if(!nextOcurrence){
             pageToErase = i;
             break;
@@ -124,12 +124,12 @@ int OPTAlgorithm::accessMemory(std::size_t page) {
     return 0;
 }
 
-std::size_t OPTAlgorithm::findNextOcurrence(std::vector<std::size_t> lines, std::size_t index, std::size_t id) {
+std::size_t OPTAlgorithm::findNextOcurrence(std::size_t index, std::size_t id) {
 
     // Encontra a proxima ocorrencia de uma pagina
     // Retorna o indice da proxima ocorrencia
     // Se nao houver proxima ocorrencia, retorna 0
 
-    for(std::size_t i = index; i < lines.size(); i++) if(lines[i] == id) return i;
+    for(std::size_t i = index; i < entrySize; i++) if(lines[i] == id) return i;
     return 0;
 }

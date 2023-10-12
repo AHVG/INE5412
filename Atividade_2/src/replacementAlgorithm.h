@@ -57,6 +57,7 @@ public:
 
 class OPTAlgorithm : public ReplacementAlgorithm {
 private:
+    std::size_t entrySize;
     std::vector<std::size_t> lines;
     int currentLine;
 public:
@@ -66,7 +67,7 @@ public:
     ~OPTAlgorithm();
 
     int accessMemory(std::size_t page);
-    std::size_t findNextOcurrence(std::vector<std::size_t> lines, std::size_t index, std::size_t id);
+    std::size_t findNextOcurrence(std::size_t index, std::size_t id);
 };
 
 #endif
