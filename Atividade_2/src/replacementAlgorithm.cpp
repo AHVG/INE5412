@@ -40,9 +40,7 @@ int FIFOAlgorithm::accessMemory(std::size_t page) {
     });
 
     if (it == pages.end()) {
-        if (full()) {
-            pages.erase(pages.begin());
-        }
+        if (full()) pages.erase(pages.begin());
         Page aux(page);
         pages.push_back(aux);
         return 0;
@@ -69,9 +67,7 @@ int LRUAlgorithm::accessMemory(std::size_t page) {
     });
 
     if (it == pages.end()) {
-        if (full()) {
-            pages.erase(pages.begin());
-        }
+        if (full()) pages.erase(pages.begin());
         Page aux(page);
         pages.push_back(aux);
         return 0;
@@ -103,9 +99,7 @@ int OPTAlgorithm::accessMemory(std::size_t page) {
     });
 
     if (it == pages.end()) {
-        if (full()) {
-            pages.erase(pages.begin() + getPageWithMaxTag());
-        }
+        if (full()) pages.erase(pages.begin() + getPageWithMaxTag());
         Page aux(page);
         pages.push_back(aux);
         return 0;
@@ -118,15 +112,12 @@ void OPTAlgorithm::refreshTags(std::vector<std::size_t> lines ,std::size_t index
     // Atualiza as tags das paginas que estao na lista de paginas a partir do indice que deu page fault
     // A tag eh a distancia que a pagina vai ser acessada novamente
     // Se a pagina nao for acessada novamente, a tag eh 0
-
+    
     for(std::size_t i = 0; i < pages.size(); i++){
         std::size_t currentId = pages[i].getId();
         std::size_t nextOcurrence = findNextOcurrence(lines, index, currentId);
-        if(nextOcurrence == 0){
-            pages[i].setTag(0);
-        } else {
-            pages[i].setTag(nextOcurrence - index);
-        }
+        if(!nextOcurrence) pages[i].setTag(0);
+        else pages[i].setTag(nextOcurrence - index);
     }
 }
 
@@ -136,11 +127,7 @@ std::size_t OPTAlgorithm::findNextOcurrence(std::vector<std::size_t> lines, std:
     // Retorna o indice da proxima ocorrencia
     // Se nao houver proxima ocorrencia, retorna -1
 
-    for(std::size_t i = index; i < lines.size(); i++){
-        if(lines[i] == id){
-            return i;
-        }
-    }
+    for(std::size_t i = index; i < lines.size(); i++) if(lines[i] == id) return i;
     return 0;
 }
 
@@ -152,13 +139,17 @@ std::size_t OPTAlgorithm::getPageWithMaxTag(){
     std::size_t maxTag = 0;
     std::size_t index = 0;
     for(std::size_t i = 0; i < pages.size(); i++){
-        if(pages[i].getTag() == 0){
-            return i;
-        }
+        if(pages[i].getTag() == 0) return i;
         if(pages[i].getTag() > maxTag){
             maxTag = pages[i].getTag();
             index = i;
         }
     }
     return index;
+}
+
+int OPTAlgorithm::in(std::size_t id) {
+    return std::find_if(pages.begin(), pages.end(), [id] (const Page &p) {
+        return p.getId() == id;
+    }) != pages.end();
 }
