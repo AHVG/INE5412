@@ -12,13 +12,10 @@ ReplacementAlgorithm::ReplacementAlgorithm(std::size_t _RAMFrames) : RAMFrames(_
 ReplacementAlgorithm::~ReplacementAlgorithm() {}
 
 
-std::vector<std::size_t> ReplacementAlgorithm::getPages() const {
-    return pages;
-}
-
 int ReplacementAlgorithm::full() {
     return pages.size() == RAMFrames;
 }
+
 
 auto ReplacementAlgorithm::containsPage(std::size_t page) {
     return std::find_if(pages.begin(), pages.end(), [page] (const std::size_t &p) {
@@ -26,13 +23,16 @@ auto ReplacementAlgorithm::containsPage(std::size_t page) {
     });
 }
 
+
 void ReplacementAlgorithm::removePage() {
     if (full()) pages.erase(pages.begin());
 }
 
+
 void ReplacementAlgorithm::addPage(std::size_t page) {
     pages.push_back(page);
 }
+
 
 FIFOAlgorithm::FIFOAlgorithm() : ReplacementAlgorithm() {}
 
@@ -84,7 +84,10 @@ int LRUAlgorithm::accessMemory(std::size_t page) {
 
 
 OPTAlgorithm::OPTAlgorithm(std::size_t _RAMFrames, std::vector<std::size_t> _lines) : ReplacementAlgorithm(_RAMFrames), lines(_lines), currentLine(-1)  {entrySize = lines.size();}
+
+
 OPTAlgorithm::OPTAlgorithm() : ReplacementAlgorithm() {}  
+
 
 OPTAlgorithm::~OPTAlgorithm() {}
 
@@ -123,6 +126,7 @@ int OPTAlgorithm::accessMemory(std::size_t page) {
     pages.push_back(page);
     return 0;
 }
+
 
 std::size_t OPTAlgorithm::findNextOcurrence(std::size_t index, std::size_t id) {
 

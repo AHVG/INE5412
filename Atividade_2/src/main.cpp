@@ -1,13 +1,8 @@
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <vector>
-
 #include "replacementAlgorithm.h"
 #include "simulator.h"
 
-#include <vector>
-#include <algorithm>
+
+
 int main(int argc, char *argv[]) {
 
     if (argc != 2) {

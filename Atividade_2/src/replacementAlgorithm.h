@@ -59,11 +59,15 @@ public:
 
 };
 
+
 class OPTAlgorithm : public ReplacementAlgorithm {
+
 private:
+
     std::size_t entrySize;
     std::vector<std::size_t> lines;
     int currentLine;
+
 public:
     OPTAlgorithm();
     OPTAlgorithm(std::size_t _RAMFrames, std::vector<std::size_t> lines);
