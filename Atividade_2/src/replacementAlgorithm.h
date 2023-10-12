@@ -4,14 +4,13 @@
 #include <iostream>
 #include <vector>
 
-#include "page.h"
 
 class ReplacementAlgorithm {
 
 protected:
 
     std::size_t RAMFrames;
-    std::vector<Page> pages;
+    std::vector<std::size_t> pages;
 
 public:
 
@@ -20,11 +19,15 @@ public:
     
     virtual ~ReplacementAlgorithm();
 
-    std::vector<Page> getPages() const;
+    std::vector<std::size_t> getPages() const;
 
     virtual int accessMemory(std::size_t page) = 0;
 
     int full();
+
+    auto containsPage(std::size_t page);
+    void removePage();
+    void addPage(std::size_t page);
 
 };
 
@@ -57,18 +60,18 @@ public:
 };
 
 class OPTAlgorithm : public ReplacementAlgorithm {
-
+private:
+    std::size_t entrySize;
+    std::vector<std::size_t> lines;
+    int currentLine;
 public:
     OPTAlgorithm();
-    OPTAlgorithm(std::size_t _RAMFrames);
+    OPTAlgorithm(std::size_t _RAMFrames, std::vector<std::size_t> lines);
 
     ~OPTAlgorithm();
 
     int accessMemory(std::size_t page);
-    void refreshTags(std::vector<std::size_t> lines, std::size_t index);
-    std::size_t findNextOcurrence(std::vector<std::size_t> lines, std::size_t index, std::size_t id);
-    std::size_t getPageWithMaxTag();
-    int in(std::size_t id);
+    std::size_t findNextOcurrence(std::size_t index, std::size_t id);
 };
 
 #endif
