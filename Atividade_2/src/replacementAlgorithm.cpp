@@ -11,28 +11,11 @@ ReplacementAlgorithm::ReplacementAlgorithm(std::size_t _RAMFrames) : RAMFrames(_
 
 ReplacementAlgorithm::~ReplacementAlgorithm() {}
 
-
-int ReplacementAlgorithm::full() {
-    return pages.size() == RAMFrames;
-}
-
-
-auto ReplacementAlgorithm::containsPage(std::size_t page) {
+std::vector<std::size_t>::iterator ReplacementAlgorithm::containsPage(std::size_t page) {
     return std::find_if(pages.begin(), pages.end(), [page] (const std::size_t &p) {
         return p == page;
     });
 }
-
-
-void ReplacementAlgorithm::removePage() {
-    if (full()) pages.erase(pages.begin());
-}
-
-
-void ReplacementAlgorithm::addPage(std::size_t page) {
-    pages.push_back(page);
-}
-
 
 FIFOAlgorithm::FIFOAlgorithm() : ReplacementAlgorithm() {}
 
@@ -50,8 +33,8 @@ int FIFOAlgorithm::accessMemory(std::size_t page) {
     // Caso ele acessar uma pagina que ja estava na lista, nao faz nada
 
     if (containsPage(page) == pages.end()) {
-        removePage();
-        addPage(page);
+        if(pages.size() == RAMFrames) pages.erase(pages.begin());
+        pages.push_back(page);
         return 0;
     }
 
@@ -72,8 +55,8 @@ int LRUAlgorithm::accessMemory(std::size_t page) {
     // Caso ele acessar uma pagina que ja estava na lista, joga esse elemento para o inicio da lista
     auto it = containsPage(page);
     if (it == pages.end()) {
-        removePage();
-        addPage(page);
+        if(pages.size() == RAMFrames) pages.erase(pages.begin());
+        pages.push_back(page);
         return 0;
     }
     pages.erase(it);
@@ -103,8 +86,8 @@ int OPTAlgorithm::accessMemory(std::size_t page) {
 
     if(containsPage(page) != pages.end()) return 1;
 
-    if(!full()) {
-        addPage(page);
+    if(pages.size() != RAMFrames) {
+        pages.push_back(page);
         return 0;
     }
 

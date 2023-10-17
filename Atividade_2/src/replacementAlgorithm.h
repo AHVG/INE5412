@@ -19,15 +19,9 @@ public:
     
     virtual ~ReplacementAlgorithm();
 
-    std::vector<std::size_t> getPages() const;
-
     virtual int accessMemory(std::size_t page) = 0;
 
-    int full();
-
-    auto containsPage(std::size_t page);
-    void removePage();
-    void addPage(std::size_t page);
+    std::vector<std::size_t>::iterator containsPage(std::size_t page);
 
 };
 
