@@ -14,12 +14,12 @@ TARGET = $(BIN_DIR)/$(NAME)
 
 # Regra para construir o programa
 $(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $@ $^
+	$(CXX) $(CXXFLAGS) -o $@ $^ -O3
 
 # Está recompilando todos os arquivos mesmo aqueles que não precisam, pois os headers são os mesmos para todos
 # Regra para construir os objetos a partir dos arquivos fonte
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(HDRS)
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
+	$(CXX) $(CXXFLAGS) -c -o $@ $< -O3
 
 # Informa ao Make quais regras não são arquivos
 .PHONY: all clean print-variables
