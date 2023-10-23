@@ -1,9 +1,7 @@
 #ifndef _H_ALGORITHM
 #define _H_ALGORITHM
 
-#include <iostream>
 #include <vector>
-
 
 class ReplacementAlgorithm {
 
@@ -58,7 +56,7 @@ private:
 
     std::size_t entrySize;
     
-    int currentLine;
+    std::size_t currentLine;
 
 public:
     OPTAlgorithm(std::size_t _RAMFrames, std::vector<std::size_t> &lines);
