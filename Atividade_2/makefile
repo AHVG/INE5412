@@ -1,5 +1,5 @@
 # Variáveis
-NAME = atividade_2
+NAME = simulador
 CXX = g++
 CXXFLAGS = -Wall -g
 SRC_DIR = src
