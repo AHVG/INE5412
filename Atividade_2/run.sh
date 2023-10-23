@@ -1,2 +1,2 @@
 make all
-time ./bin/atividade_2 4 < ./entradas/entrada.txt
+time ./bin/simulador 4 < ./entradas/vsim-gcc.txt
