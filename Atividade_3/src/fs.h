@@ -33,6 +33,7 @@ public:
             fs_inode inode[INODES_PER_BLOCK];
             int pointers[POINTERS_PER_BLOCK];
             char data[Disk::DISK_BLOCK_SIZE];
+            // parabens professores
     };
 
 public:

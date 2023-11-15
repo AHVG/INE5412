@@ -1,8 +1,22 @@
 #include "fs.h"
+#include <cstring>
 
 int INE5412_FS::fs_format()
 {
-	return 0;
+	char *data = new char[Disk::DISK_BLOCK_SIZE];
+	memset(data, 0, Disk::DISK_BLOCK_SIZE);
+	for(int i = 0; i < disk->size(); i++){
+		disk->write(i, data);
+	}
+	delete[] data;
+	union fs_block block;
+
+	block.super.magic = FS_MAGIC;
+	block.super.nblocks = disk->size();
+	block.super.ninodeblocks = disk->size() / 10;
+	block.super.ninodes = block.super.ninodeblocks * INODES_PER_BLOCK;
+	disk->write(0, block.data);
+	return 1;
 }
 
 void INE5412_FS::fs_debug()
