@@ -39,7 +39,7 @@ void INE5412_FS::fs_debug()
 		disk->read(i, block.data);
 		for(int j = 0; j < INODES_PER_BLOCK; j++) {
 			if(block.inode[j].isvalid){
-				cout << "inode " << (i-1)*INODES_PER_BLOCK + j << ":\n";
+				cout << "inode " << (i - 1) * INODES_PER_BLOCK + j + 1 << ":\n";
 				cout << "    size: " << block.inode[j].size << " bytes\n";
 				cout << "    direct blocks:";
 				for(int k = 0; k < POINTERS_PER_INODE; k++) {
@@ -122,20 +122,23 @@ int INE5412_FS::fs_create()
 		union fs_block aux;
 		disk->read(i, aux.data);
 		
-		// Se estiver ocupado, passa para o próximo
-		if (aux.inode->isvalid)
-			continue;
+		for (int k = 0; k < block.super.ninodes; k++) {
+			// Se estiver ocupado, passa para o próximo
+			if (aux.inode[k].isvalid)
+				continue;
+			
+			aux.inode[k].isvalid = 1;
+			aux.inode[k].size = 0;
+			aux.inode[k].indirect = 0;
 
-		aux.inode->isvalid = 1;
-		aux.inode->size = 0;
-		aux.inode->indirect = 0;
+			for (int j = 0; j < POINTERS_PER_INODE; j++)
+				aux.inode[k].direct[j] = 0;
+			
+			disk->write(i, aux.data);
 
-		for (int j = 0; j < POINTERS_PER_INODE; j++)
-			aux.inode->direct[j] = 0;
-		
-		disk->write(i, aux.data);
+			return (i - 1) * INODES_PER_BLOCK + k + 1;
+		}
 
-		return i;
 	}
 
 	return 0;
