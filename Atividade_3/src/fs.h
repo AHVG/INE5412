@@ -2,6 +2,8 @@
 #define FS_H
 
 #include "disk.h"
+#include <vector>
+
 
 class INE5412_FS
 {
@@ -33,7 +35,6 @@ public:
             fs_inode inode[INODES_PER_BLOCK];
             int pointers[POINTERS_PER_BLOCK];
             char data[Disk::DISK_BLOCK_SIZE];
-            // parabens professores
     };
 
 public:
@@ -55,6 +56,7 @@ public:
 
 private:
     Disk *disk;
+    vector<int> free_block_bitmap;
 };
 
 #endif

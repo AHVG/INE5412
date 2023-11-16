@@ -5,16 +5,21 @@ int INE5412_FS::fs_format()
 {
 	char *data = new char[Disk::DISK_BLOCK_SIZE];
 	memset(data, 0, Disk::DISK_BLOCK_SIZE);
-	for(int i = 0; i < disk->size(); i++){
+
+	for(int i = 0; i < disk->size(); i++) {
 		disk->write(i, data);
 	}
+
 	delete[] data;
+
 	union fs_block block;
 	block.super.magic = FS_MAGIC;
 	block.super.nblocks = disk->size();
 	block.super.ninodeblocks = disk->size() / 10;
 	block.super.ninodes = block.super.ninodeblocks * INODES_PER_BLOCK;
+
 	disk->write(0, block.data);
+
 	return 1;
 }
 
@@ -30,25 +35,25 @@ void INE5412_FS::fs_debug()
 	cout << "    " << block.super.ninodeblocks << " blocks for inodes\n";
 	cout << "    " << block.super.ninodes << " inodes total\n";
 
-	for(int i = 1; i <= block.super.ninodeblocks; i++){
+	for(int i = 1; i <= block.super.ninodeblocks; i++) { // detro deste for tem operações de escrita no block (não acho legal)
 		disk->read(i, block.data);
-		for(int j = 0; j < INODES_PER_BLOCK; j++){
+		for(int j = 0; j < INODES_PER_BLOCK; j++) {
 			if(block.inode[j].isvalid){
 				cout << "inode " << (i-1)*INODES_PER_BLOCK + j << ":\n";
 				cout << "    size: " << block.inode[j].size << " bytes\n";
 				cout << "    direct blocks:";
-				for(int k = 0; k < POINTERS_PER_INODE; k++){
-					if(block.inode[j].direct[k]){
+				for(int k = 0; k < POINTERS_PER_INODE; k++) {
+					if(block.inode[j].direct[k]) {
 						cout << " " << block.inode[j].direct[k];
 					}
 				}
 				cout << "\n";
-				if(block.inode[j].indirect){
+				if(block.inode[j].indirect) {
 					cout << "    indirect block: " << block.inode[j].indirect << "\n";
 					disk->read(block.inode[j].indirect, block.data);
 					cout << "    indirect data blocks:";
-					for(int k = 0; k < POINTERS_PER_BLOCK; k++){
-						if(block.pointers[k]){
+					for(int k = 0; k < POINTERS_PER_BLOCK; k++) {
+						if(block.pointers[k]) {
 							cout << " " << block.pointers[k];
 						}
 					}
@@ -66,17 +71,48 @@ int INE5412_FS::fs_mount()
 {
 	union fs_block block;
 	disk->read(0, block.data);
-	if(block.super.magic != FS_MAGIC){
+
+	if(block.super.magic != FS_MAGIC) {
 		return 0;
 	}
-	// TODO: bitmap
-	// percorrer todos os blocos e marcar os que estao ocupados, acredito que so verificar se o data[i] = tudo 0
-	// ai criar um bitmap com os blocos livres, cada bloco do bitmap tem 32bits
+
+	// Usar bit para representar bloco e não um inteiro (criar uma classe para encapsular esse comportamento?)
+	for (int i = block.super.ninodes + 1; i < disk->size(); i++)
+		free_block_bitmap.push_back(0);
+
+	// Marcar no bitmap ocupado (1) aqueles blocos para os quais os inodes apontam 
+	// A operação de mount não é usada apenas uma vez antes de qualquer coisa? se for o caso, não fa sentido esta etapa
+	for (int i = 1; i < block.super.ninodeblocks + 1; i++) {
+		union fs_block aux;
+		disk->read(i, aux.data);
+		
+		// Para o caso de o inode não estiver sendo usado
+		if (!aux.inode->isvalid)
+			continue;
+
+		for (int j = 0; j < POINTERS_PER_INODE; j++)
+			if (aux.inode->direct[j] && block.super.ninodes < aux.inode->direct[j] && aux.inode->direct[j] < block.super.nblocks)
+				free_block_bitmap[aux.inode->direct[j]] = 1;
+
+		// Para o caso de o inode não ter bloco indireto
+		if (!aux.inode->indirect)
+			continue;
+
+		disk->read(aux.inode->indirect, aux.data);
+
+		for (int j = 0; j < POINTERS_PER_BLOCK; j++)
+			if (aux.pointers[j] && block.super.ninodes < aux.pointers[j] && aux.pointers[j] < block.super.nblocks)
+				free_block_bitmap[aux.pointers[j]] = 1;
+
+	}
+
+
 	return 1;
 }
 
 int INE5412_FS::fs_create()
 {
+
 	return 0;
 }
 
