@@ -112,6 +112,31 @@ int INE5412_FS::fs_mount()
 
 int INE5412_FS::fs_create()
 {
+	union fs_block block;
+	disk->read(0, block.data);
+
+	if(block.super.magic != FS_MAGIC)
+		return 0;
+
+	for (int i = 1; i < block.super.ninodeblocks + 1; i++) {
+		union fs_block aux;
+		disk->read(i, aux.data);
+		
+		// Se estiver ocupado, passa para o próximo
+		if (aux.inode->isvalid)
+			continue;
+
+		aux.inode->isvalid = 1;
+		aux.inode->size = 0;
+		aux.inode->indirect = 0;
+
+		for (int j = 0; j < POINTERS_PER_INODE; j++)
+			aux.inode->direct[j] = 0;
+		
+		disk->write(i, aux.data);
+
+		return i;
+	}
 
 	return 0;
 }
