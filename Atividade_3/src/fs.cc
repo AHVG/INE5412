@@ -1,6 +1,9 @@
 #include "fs.h"
 #include <cstring>
 
+
+// TODO: ARRUMAR TODAS AS VERIFICACOES
+
 int INE5412_FS::fs_format()
 {
 	char *data = new char[Disk::DISK_BLOCK_SIZE];
@@ -35,7 +38,7 @@ void INE5412_FS::fs_debug()
 	cout << "    " << block.super.ninodeblocks << " blocks for inodes\n";
 	cout << "    " << block.super.ninodes << " inodes total\n";
 
-	for(int i = 1; i <= block.super.ninodeblocks; i++) { // detro deste for tem operações de escrita no block (não acho legal)
+	for(int i = 1; i <= block.super.ninodeblocks; i++) { // dentro deste for tem operações de escrita no block (não acho legal) // da pra criar um aux block
 		disk->read(i, block.data);
 		for(int j = 0; j < INODES_PER_BLOCK; j++) {
 			if(block.inode[j].isvalid){
@@ -91,7 +94,7 @@ int INE5412_FS::fs_mount()
 			continue;
 
 		for (int j = 0; j < POINTERS_PER_INODE; j++)
-			if (aux.inode->direct[j] && block.super.ninodes < aux.inode->direct[j] && aux.inode->direct[j] < block.super.nblocks)
+			if (aux.inode->direct[j])
 				free_block_bitmap[aux.inode->direct[j]] = 1;
 
 		// Para o caso de o inode não ter bloco indireto
@@ -101,7 +104,7 @@ int INE5412_FS::fs_mount()
 		disk->read(aux.inode->indirect, aux.data);
 
 		for (int j = 0; j < POINTERS_PER_BLOCK; j++)
-			if (aux.pointers[j] && block.super.ninodes < aux.pointers[j] && aux.pointers[j] < block.super.nblocks)
+			if (aux.pointers[j])
 				free_block_bitmap[aux.pointers[j]] = 1;
 
 	}
@@ -146,12 +149,45 @@ int INE5412_FS::fs_create()
 
 int INE5412_FS::fs_delete(int inumber)
 {
-	return 0;
+	union fs_block block, super;
+
+	inumber--;
+
+	int block_inumber = (inumber / INODES_PER_BLOCK) + 1;
+	int rest_inumber = inumber % INODES_PER_BLOCK;
+
+	disk->read(0, super.data);
+	disk->read(block_inumber, block.data);
+	
+
+	block.inode[rest_inumber].isvalid = 0;
+	
+	for(int i = 0; i < POINTERS_PER_INODE; i++) {
+		if(block.inode[rest_inumber].direct[i])
+			free_block_bitmap[block.inode[rest_inumber].direct[i]-super.super.ninodeblocks-1] = 0;
+		
+	}
+
+	if(block.inode[rest_inumber].indirect)
+		for(int i = 0; i < POINTERS_PER_BLOCK; i++) {
+			if (block.pointers[i])
+				free_block_bitmap[block.pointers[i]-super.super.ninodeblocks-1] = 0;
+	}
+
+	disk->write(block_inumber, block.data);
+	return 1;
+
 }
 
 int INE5412_FS::fs_getsize(int inumber)
 {
-	return -1;
+	// TODO: verificacoes
+	union fs_block block;
+	inumber--;
+	int block_inumber = (inumber / INODES_PER_BLOCK) + 1;
+	int rest_inumber = inumber % INODES_PER_BLOCK;
+	disk->read(block_inumber, block.data);
+	return block.inode[rest_inumber].size;
 }
 
 int INE5412_FS::fs_read(int inumber, char *data, int length, int offset)
