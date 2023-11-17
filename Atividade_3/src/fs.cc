@@ -1,24 +1,19 @@
 #include "fs.h"
 #include <cstring>
+#include <cmath>
 
-
-// TODO: ARRUMAR TODAS AS VERIFICACOES
 
 int INE5412_FS::fs_format()
 {
-	char *data = new char[Disk::DISK_BLOCK_SIZE];
-	memset(data, 0, Disk::DISK_BLOCK_SIZE);
-
-	for(int i = 0; i < disk->size(); i++) {
-		disk->write(i, data);
-	}
-
-	delete[] data;
-
 	union fs_block block;
+	char data[Disk::DISK_BLOCK_SIZE] = {0};
+
+	for(int i = 0; i < disk->size(); i++)
+		disk->write(i, data);
+
 	block.super.magic = FS_MAGIC;
 	block.super.nblocks = disk->size();
-	block.super.ninodeblocks = disk->size() / 10;
+	block.super.ninodeblocks = ceil(disk->size() / 10);
 	block.super.ninodes = block.super.ninodeblocks * INODES_PER_BLOCK;
 
 	disk->write(0, block.data);
@@ -38,28 +33,32 @@ void INE5412_FS::fs_debug()
 	cout << "    " << block.super.ninodeblocks << " blocks for inodes\n";
 	cout << "    " << block.super.ninodes << " inodes total\n";
 
-	for(int i = 1; i <= block.super.ninodeblocks; i++) { // dentro deste for tem operações de escrita no block (não acho legal) // da pra criar um aux block
-		disk->read(i, block.data);
+	for(int i = 1; i <= block.super.ninodeblocks; i++) {
+		union fs_block aux;
+		disk->read(i, aux.data);
+		
 		for(int j = 0; j < INODES_PER_BLOCK; j++) {
-			if(block.inode[j].isvalid){
+
+			if(aux.inode[j].isvalid){
 				cout << "inode " << (i - 1) * INODES_PER_BLOCK + j + 1 << ":\n";
-				cout << "    size: " << block.inode[j].size << " bytes\n";
+				cout << "    size: " << aux.inode[j].size << " bytes\n";
 				cout << "    direct blocks:";
-				for(int k = 0; k < POINTERS_PER_INODE; k++) {
-					if(block.inode[j].direct[k]) {
-						cout << " " << block.inode[j].direct[k];
-					}
-				}
+
+				for(int k = 0; k < POINTERS_PER_INODE; k++)
+					if(aux.inode[j].direct[k])
+						cout << " " << aux.inode[j].direct[k];
+
 				cout << "\n";
-				if(block.inode[j].indirect) {
-					cout << "    indirect block: " << block.inode[j].indirect << "\n";
-					disk->read(block.inode[j].indirect, block.data);
+
+				if(aux.inode[j].indirect) {	
+					cout << "    indirect block: " << aux.inode[j].indirect << "\n";
+					disk->read(aux.inode[j].indirect, aux.data);
 					cout << "    indirect data blocks:";
-					for(int k = 0; k < POINTERS_PER_BLOCK; k++) {
-						if(block.pointers[k]) {
-							cout << " " << block.pointers[k];
-						}
-					}
+
+					for(int k = 0; k < POINTERS_PER_BLOCK; k++)
+						if(aux.pointers[k])
+							cout << " " << aux.pointers[k];
+					
 					cout << "\n";
 				}
 			}
@@ -67,24 +66,17 @@ void INE5412_FS::fs_debug()
 	}
 }
 
-// Examina o disco para um sistema de arquivos. Se um est´a presente, lˆe o superbloco, constroi um
-// bitmap de blocos livres, e prepara o sistema de arquivos para uso. Retorna um em caso de sucesso, zero
-// caso contr´ario. Note que uma montagem bem-sucedida ´e um pr´e-requisito para as outras chamadas.
 int INE5412_FS::fs_mount()
 {
 	union fs_block block;
 	disk->read(0, block.data);
 
-	if(block.super.magic != FS_MAGIC) {
+	if(block.super.magic != FS_MAGIC)
 		return 0;
-	}
 
-	// Usar bit para representar bloco e não um inteiro (criar uma classe para encapsular esse comportamento?)
-	for (int i = block.super.ninodes + 1; i < disk->size(); i++)
+	for (int i = 0; i < disk->size(); i++)
 		free_block_bitmap.push_back(0);
 
-	// Marcar no bitmap ocupado (1) aqueles blocos para os quais os inodes apontam 
-	// A operação de mount não é usada apenas uma vez antes de qualquer coisa? se for o caso, não fa sentido esta etapa
 	for (int i = 1; i < block.super.ninodeblocks + 1; i++) {
 		union fs_block aux;
 		disk->read(i, aux.data);
@@ -93,9 +85,13 @@ int INE5412_FS::fs_mount()
 		if (!aux.inode->isvalid)
 			continue;
 
-		for (int j = 0; j < POINTERS_PER_INODE; j++)
-			if (aux.inode->direct[j])
+		for (int j = 0; j < POINTERS_PER_INODE; j++) {
+			if (fs_check_numblock(aux.inode->direct[j])) {
 				free_block_bitmap[aux.inode->direct[j]] = 1;
+			} else {
+				return 0;
+			}
+		}
 
 		// Para o caso de o inode não ter bloco indireto
 		if (!aux.inode->indirect)
@@ -103,9 +99,13 @@ int INE5412_FS::fs_mount()
 
 		disk->read(aux.inode->indirect, aux.data);
 
-		for (int j = 0; j < POINTERS_PER_BLOCK; j++)
-			if (aux.pointers[j])
+		for (int j = 0; j < POINTERS_PER_BLOCK; j++) {
+			if (fs_check_numblock(aux.pointers[j])) {
 				free_block_bitmap[aux.pointers[j]] = 1;
+			} else {
+				return 0;
+			}
+		}
 
 	}
 
@@ -126,7 +126,7 @@ int INE5412_FS::fs_create()
 		disk->read(i, aux.data);
 		
 		for (int k = 0; k < block.super.ninodes; k++) {
-			// Se estiver ocupado, passa para o próximo
+
 			if (aux.inode[k].isvalid)
 				continue;
 			
@@ -149,45 +149,52 @@ int INE5412_FS::fs_create()
 
 int INE5412_FS::fs_delete(int inumber)
 {
+	if (!fs_check_inumber(inumber))
+		return 0;
+
 	union fs_block block, super;
-
-	inumber--;
-
-	int block_inumber = (inumber / INODES_PER_BLOCK) + 1;
-	int rest_inumber = inumber % INODES_PER_BLOCK;
+	int inode_block = fs_get_inode_block(inumber);
+	int inode_line = fs_get_inode_line(inumber);
 
 	disk->read(0, super.data);
-	disk->read(block_inumber, block.data);
-	
+	disk->read(inode_block, block.data);
 
-	block.inode[rest_inumber].isvalid = 0;
+	block.inode[inode_line].isvalid = 0;
 	
 	for(int i = 0; i < POINTERS_PER_INODE; i++) {
-		if(block.inode[rest_inumber].direct[i])
-			free_block_bitmap[block.inode[rest_inumber].direct[i]-super.super.ninodeblocks-1] = 0;
-		
+		if (fs_check_numblock(block.inode[inode_line].direct[i])) {
+			free_block_bitmap[block.inode[inode_line].direct[i]] = 0;
+		} else {
+			return 0;
+		}
 	}
 
-	if(block.inode[rest_inumber].indirect)
+	if(block.inode[inode_line].indirect) {
 		for(int i = 0; i < POINTERS_PER_BLOCK; i++) {
-			if (block.pointers[i])
-				free_block_bitmap[block.pointers[i]-super.super.ninodeblocks-1] = 0;
+			if (fs_check_numblock(block.pointers[i])) {
+				free_block_bitmap[block.pointers[i]] = 0;
+			} else {
+				return 0;
+			}
+		}
 	}
 
-	disk->write(block_inumber, block.data);
+	disk->write(inode_block, block.data);
 	return 1;
-
 }
 
 int INE5412_FS::fs_getsize(int inumber)
 {
-	// TODO: verificacoes
+	if (!fs_check_inumber(inumber))
+		return -1;
+
 	union fs_block block;
-	inumber--;
-	int block_inumber = (inumber / INODES_PER_BLOCK) + 1;
-	int rest_inumber = inumber % INODES_PER_BLOCK;
-	disk->read(block_inumber, block.data);
-	return block.inode[rest_inumber].size;
+	int inode_block = fs_get_inode_block(inumber);
+	int inode_line = fs_get_inode_line(inumber);
+
+	disk->read(inode_block, block.data);
+
+	return block.inode[inode_line].size;
 }
 
 int INE5412_FS::fs_read(int inumber, char *data, int length, int offset)
@@ -198,4 +205,29 @@ int INE5412_FS::fs_read(int inumber, char *data, int length, int offset)
 int INE5412_FS::fs_write(int inumber, const char *data, int length, int offset)
 {
 	return 0;
+}
+
+int INE5412_FS::fs_check_inumber(int inumber) {
+	union fs_block block;
+	disk->read(0, block.data);
+	int inode_block = fs_get_inode_block(inumber);
+
+	return 0 < inode_block && inode_block < block.super.ninodeblocks + 1;
+}
+
+int INE5412_FS::fs_check_numblock(int blocknum) {
+	union fs_block block;
+	disk->read(0, block.data);
+
+	return block.super.ninodeblocks < blocknum && blocknum < block.super.nblocks;
+}
+
+int INE5412_FS::fs_get_inode_block(int inumber) {
+	inumber--;
+	return (inumber / INODES_PER_BLOCK) + 1;
+}
+
+int INE5412_FS::fs_get_inode_line(int inumber) {
+	inumber--;
+	return inumber % INODES_PER_BLOCK;
 }

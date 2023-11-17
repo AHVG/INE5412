@@ -55,8 +55,18 @@ public:
     int  fs_write(int inumber, const char *data, int length, int offset);
 
 private:
+
     Disk *disk;
     vector<int> free_block_bitmap;
+
+private:
+
+    int fs_check_inumber(int inumber);
+    int fs_check_numblock(int blocknum);
+
+    int fs_get_inode_block(int inumber);
+    int fs_get_inode_line(int inumber);
+
 };
 
 #endif
