@@ -263,6 +263,30 @@ int INE5412_FS::fs_read(int inumber, char *data, int length, int offset)
 
 int INE5412_FS::fs_write(int inumber, const char *data, int length, int offset)
 {
+	int start_pointer_block = offset / Disk::DISK_BLOCK_SIZE;
+	int end_pointer_block = (length + offset) / Disk::DISK_BLOCK_SIZE;
+	
+	if (POINTERS_TO_BLOCKS_PER_INODE <= end_pointer_block)
+		end_pointer_block = POINTERS_TO_BLOCKS_PER_INODE - 1;
+
+	int n_blocks = 0;
+	vector<int> blocks;
+
+	string blocks_content = "";
+	for (int i = start_pointer_block; i < end_pointer_block + 1; i++) {
+		union fs_block block = fs_get_content_block(i);
+		string aux(block.data);
+		blocks_content += aux;
+	}
+
+	string aux(data);
+	blocks_content.replace(offset % Disk::DISK_BLOCK_SIZE, aux.size(), aux);
+
+	for (int i = start_pointer_block; i < end_pointer_block + 1; i++) {
+		string aux = blocks_content.substr((i - start_pointer_block) * Disk::DISK_BLOCK_SIZE, (i - start_pointer_block + 1) * Disk::DISK_BLOCK_SIZE);
+		union fs_block block = fs_set_content_block(i, aux.c_str());
+	}
+	
 	return 0;
 }
 
@@ -289,4 +313,14 @@ int INE5412_FS::fs_get_inode_block(int inumber) {
 int INE5412_FS::fs_get_inode_line(int inumber) {
 	inumber--;
 	return inumber % INODES_PER_BLOCK;
+}
+
+union fs_block INE5412_FS::fs_get_content_block(int n_pointer_to_block) {
+	
+}
+
+void INE5412_FS::fs_set_content_block(int n_pointer_to_block, char *data) {
+	if (n_pointer_to_block <= 5) } {
+		disk->read()
+	}
 }

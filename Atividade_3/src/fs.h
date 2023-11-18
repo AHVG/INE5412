@@ -12,6 +12,8 @@ public:
     static const unsigned short int INODES_PER_BLOCK = 128;
     static const unsigned short int POINTERS_PER_INODE = 5;
     static const unsigned short int POINTERS_PER_BLOCK = 1024;
+    static const unsigned short int POINTERS_TO_BLOCKS_PER_INODE = POINTERS_PER_INODE + POINTERS_PER_BLOCK;
+    static const unsigned short int BYTES_PER_INODE = POINTERS_TO_BLOCKS_PER_INODE * Disk::DISK_BLOCK_SIZE;
 
     class fs_superblock {
         public:
@@ -66,6 +68,9 @@ private:
 
     int fs_get_inode_block(int inumber);
     int fs_get_inode_line(int inumber);
+
+    union fs_block fs_get_content_block(int n_pointer_to_block);
+    void fs_set_content_block(int n_pointer_to_block, char *data);
 
 };
 
