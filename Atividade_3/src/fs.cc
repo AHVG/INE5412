@@ -212,59 +212,51 @@ int INE5412_FS::fs_read(int inumber, char *data, int length, int offset)
 
 	int size = block.inode[inode_line].size;
 
-	if(offset >= size)
-		return 0;
-
+	if(offset >= size) return 0;
 
 	int block_offset = offset / Disk::DISK_BLOCK_SIZE;
 
-	int total_bytes = 0, cont = 0, destination_offset = 0;
+	int destination_offset = 0;
 	int aux_offset = offset; int aux_length = length + offset;
 	int bytes_to_copy = Disk::DISK_BLOCK_SIZE;
 
 	for(int i = block_offset; i < POINTERS_PER_INODE; ++i){
 		int current_block = block.inode[inode_line].direct[i];
 		if(current_block <= 0) break;
+
 		union fs_block aux;
 		disk->read(current_block, aux.data);
 		aux_offset += Disk::DISK_BLOCK_SIZE;
-		if(aux_offset > aux_length){
-			cont = aux_offset - aux_length;
-			total_bytes = aux_offset - cont;
-			bytes_to_copy = total_bytes % Disk::DISK_BLOCK_SIZE;
-		}
-		for(int j = 0; j < bytes_to_copy; ++j){
-			data[destination_offset++] = aux.data[j];
-		}
-		if(aux_offset > aux_length) break;
+
+		if(aux_offset > aux_length) return length;
+		if(aux_offset > size) bytes_to_copy = size % Disk::DISK_BLOCK_SIZE;
+		
+		for(int j = 0; j < bytes_to_copy; ++j) data[destination_offset++] = aux.data[j];
+		
 	}
 
 	bytes_to_copy = Disk::DISK_BLOCK_SIZE;
 	block_offset = (aux_offset / Disk::DISK_BLOCK_SIZE) - POINTERS_PER_INODE;
+
 	if(block.inode[inode_line].indirect){
 		union fs_block indirect_block;
 		disk->read(block.inode[inode_line].indirect, indirect_block.data);
 		for(int i = block_offset; i < POINTERS_PER_BLOCK; ++i){
 			int current_block = indirect_block.pointers[i];
 			if(current_block <= 0) break;
+
 			union fs_block aux;
 			disk->read(current_block, aux.data);
 			aux_offset += Disk::DISK_BLOCK_SIZE;
-			if(aux_offset > aux_length){
-				cont = aux_offset - aux_length;
-				total_bytes = aux_offset - cont;
-				bytes_to_copy = total_bytes % Disk::DISK_BLOCK_SIZE;
-			}
 
-			for(int j = 0; j < bytes_to_copy; ++j){
-				data[destination_offset++] = aux.data[j];
-			}
-			if(aux_offset > aux_length) break;
+			if(aux_offset > aux_length) return length;
+			if(aux_offset > size) bytes_to_copy = size % Disk::DISK_BLOCK_SIZE;
+			for(int j = 0; j < bytes_to_copy; ++j) data[destination_offset++] = aux.data[j];
+			
 			}
 	}
 	
-	if(length + offset > size)
-		return size - offset;
+	if(length + offset > size) return size - offset;
 
 	return length;
 }
