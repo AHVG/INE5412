@@ -212,108 +212,61 @@ int INE5412_FS::fs_read(int inumber, char *data, int length, int offset)
 
 	int size = block.inode[inode_line].size;
 
-	vector<char> all_data = {};
-
 	if(offset >= size)
 		return 0;
 
-	for(int i = 0; i < POINTERS_PER_INODE; ++i){
+
+	int block_offset = offset / Disk::DISK_BLOCK_SIZE;
+
+	int total_bytes = 0, cont = 0, destination_offset = 0;
+	int aux_offset = offset; int aux_length = length + offset;
+	int bytes_to_copy = Disk::DISK_BLOCK_SIZE;
+
+	for(int i = block_offset; i < POINTERS_PER_INODE; ++i){
 		int current_block = block.inode[inode_line].direct[i];
-		if(current_block<=0) break;
+		if(current_block <= 0) break;
 		union fs_block aux;
 		disk->read(current_block, aux.data);
-		for(int j = 0; j < Disk::DISK_BLOCK_SIZE; ++j){
-			all_data.push_back(aux.data[j]);
+		aux_offset += Disk::DISK_BLOCK_SIZE;
+		if(aux_offset > aux_length){
+			cont = aux_offset - aux_length;
+			total_bytes = aux_offset - cont;
+			bytes_to_copy = total_bytes % Disk::DISK_BLOCK_SIZE;
 		}
+		for(int j = 0; j < bytes_to_copy; ++j){
+			data[destination_offset++] = aux.data[j];
+		}
+		if(aux_offset > aux_length) break;
 	}
+
+	bytes_to_copy = Disk::DISK_BLOCK_SIZE;
+	block_offset = (aux_offset / Disk::DISK_BLOCK_SIZE) - POINTERS_PER_INODE;
 	if(block.inode[inode_line].indirect){
 		union fs_block indirect_block;
 		disk->read(block.inode[inode_line].indirect, indirect_block.data);
-		for(int i = 0; i < POINTERS_PER_BLOCK; ++i){
+		for(int i = block_offset; i < POINTERS_PER_BLOCK; ++i){
 			int current_block = indirect_block.pointers[i];
-			if(current_block<=0) break;
+			if(current_block <= 0) break;
 			union fs_block aux;
 			disk->read(current_block, aux.data);
-			for(int j = 0; j < Disk::DISK_BLOCK_SIZE; ++j){
-				all_data.push_back(aux.data[j]);
+			aux_offset += Disk::DISK_BLOCK_SIZE;
+			if(aux_offset > aux_length){
+				cont = aux_offset - aux_length;
+				total_bytes = aux_offset - cont;
+				bytes_to_copy = total_bytes % Disk::DISK_BLOCK_SIZE;
 			}
-		}
+
+			for(int j = 0; j < bytes_to_copy; ++j){
+				data[destination_offset++] = aux.data[j];
+			}
+			if(aux_offset > aux_length) break;
+			}
 	}
-
-
-	int cont = 0;
-	int i = offset;
-	while(i < offset + length && i < size)
-		data[cont++] = all_data[i++];
 	
 	if(length + offset > size)
 		return size - offset;
 
 	return length;
-
-
-	// da pra fazer esse codigo funcionar, falta alguns ajustes, ele seria uma versao mais otimizada doq a versao acima (que simplesmente le TODOS OS BLOCOS)
-	// essa aqui leria somente oq foi pedido, oq  da um pouco mais de trabalho pra fazer, mas ta quase la
-	
-	// if(aux_length > size)
-	// 	aux_length = size;
-
-	// int block_offset = offset / Disk::DISK_BLOCK_SIZE;
-
-	// int total_bytes = 0, cont = 0, destination_offset = 0;
-	// int aux_offset = offset;
-	// int bytes_to_copy = Disk::DISK_BLOCK_SIZE;
-
-	// for(int i = block_offset; i < POINTERS_PER_INODE; ++i){
-	// 	int current_block = block.inode[inode_line].direct[i];
-	// 	cout << "current block: " << current_block << endl;
-	// 	union fs_block aux;
-	// 	disk->read(current_block, aux.data);
-	// 	aux_offset += Disk::DISK_BLOCK_SIZE;
-	// 	if(aux_offset > aux_length){
-	// 		cout << "entrou no if" << endl;
-	// 		cont = aux_offset - aux_length;
-	// 		total_bytes = aux_offset - cont;
-	// 		bytes_to_copy = total_bytes % Disk::DISK_BLOCK_SIZE;
-	// 	}
-	// 	cout << "bytes_to_copy: " << bytes_to_copy << endl;
-	// 	for(int j = 0; j < bytes_to_copy; ++j){
-	// 		data[destination_offset++] = aux.data[j];
-	// 	}
-	// 	cout << "aux_offset: " << aux_offset << endl;
-	// 	if(aux_offset > aux_length) break;
-	// }
-
-	// cout << "block_offset: " << block_offset << endl;
-	// bytes_to_copy = Disk::DISK_BLOCK_SIZE;
-	// block_offset = (aux_offset / Disk::DISK_BLOCK_SIZE) - POINTERS_PER_INODE;
-	// cout << "block_offset: " << block_offset << endl;
-	// if(aux_offset < aux_length){
-	// 	cout << "entrou no indireto" << endl;
-	// 	union fs_block indirect_block;
-	// 	disk->read(block.inode[inode_line].indirect, indirect_block.data);
-	// 	for(int i = block_offset; i < POINTERS_PER_BLOCK; ++i){
-	// 		int current_block = indirect_block.pointers[i];
-	// 		cout << "current block: " << current_block << endl;
-	// 		union fs_block aux;
-	// 		disk->read(current_block, aux.data);
-	// 		aux_offset += Disk::DISK_BLOCK_SIZE;
-	// 		if(aux_offset > aux_length){
-	// 			cont = aux_offset - aux_length;
-	// 			total_bytes = aux_offset - cont;
-	// 			bytes_to_copy = total_bytes % Disk::DISK_BLOCK_SIZE;
-	// 		}
-	// 		cout << "aux_offset: " << aux_offset << endl;
-	// 		cout << "bytes_to_copy: " << bytes_to_copy << endl;
-	// 		for(int j = 0; j < bytes_to_copy; ++j){
-	// 			data[destination_offset++] = aux.data[j];
-	// 		}
-	// 		if(aux_offset > aux_length) break;
-	// 	}
-
-	// }
-	// cout << "total_bytes: " << total_bytes << endl;
-	// return min(length, total_bytes);
 }
 
 int INE5412_FS::fs_write(int inumber, const char *data, int length, int offset)
