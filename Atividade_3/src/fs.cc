@@ -263,31 +263,93 @@ int INE5412_FS::fs_read(int inumber, char *data, int length, int offset)
 
 int INE5412_FS::fs_write(int inumber, const char *data, int length, int offset)
 {
-	int start_pointer_block = offset / Disk::DISK_BLOCK_SIZE;
-	int end_pointer_block = (length + offset) / Disk::DISK_BLOCK_SIZE;
-	
-	if (POINTERS_TO_BLOCKS_PER_INODE <= end_pointer_block)
-		end_pointer_block = POINTERS_TO_BLOCKS_PER_INODE - 1;
 
-	int n_blocks = 0;
-	vector<int> blocks;
+	if (BYTES_PER_INODE <= offset)
+		return 0;
 
+	if (BYTES_PER_INODE <= offset + length)
+		length = BYTES_PER_INODE - offset;
+
+	// Temos 5 ponteiros diretos e um indireto, o qual equivale a 1024 diretos
+	// Assim start_pointer_block pode assumir um valor entre 0 a 1028 (1024 + 5 - 1), inclusos
+	// O end_pointer_block também pode assumir um valor entre 0 a 1028, inclusos
+	// Se start_block_pointer tiver valor de 0 a 4, então ele vai ter que pegar blocos
+	// apontados pelos ponteiros diretos
+	int start_block_pointer = offset / Disk::DISK_BLOCK_SIZE;
+	int end_block_pointer = (length + offset - 1) / Disk::DISK_BLOCK_SIZE;
+
+	int inode_block = fs_get_inode_block(inumber);
+	int inode_line = fs_get_inode_line(inumber);
+
+	// Ler todos os blocos que serão modificados
 	string blocks_content = "";
-	for (int i = start_pointer_block; i < end_pointer_block + 1; i++) {
-		union fs_block block = fs_get_content_block(i);
-		string aux(block.data);
-		blocks_content += aux;
+	
+	// Faz a leitura dos blocos e, se ele não existir, aloca memória para isso. Se não for possível alocar, retorna erro
+	for (int i = start_block_pointer; i < end_block_pointer + 1; i++) {
+		fs_block block, aux;
+		int pointer = 0;
+		
+		disk->read(inode_block, block.data);
+
+		if (i < 5) {
+			pointer = block.inode[inode_line].direct[i];
+			
+			if (pointer == 0)
+				pointer = fs_allocate_block();
+			
+			if (pointer == 0)
+				return 0;
+			
+			block.inode[inode_line].direct[i] = pointer;
+
+		} else {
+
+			if (block.inode[inode_line].indirect == 0)
+				block.inode[inode_line].indirect = fs_allocate_block();
+
+			if (block.inode[inode_line].indirect == 0)
+				return 0;
+			
+			disk->read(block.inode[inode_line].indirect, aux.data);
+			pointer = aux.pointers[i - 5];
+
+			if (pointer == 0)
+				pointer = fs_allocate_block();
+			
+			if (pointer == 0)
+				return 0;
+
+			aux.pointers[i - 5] = pointer;
+			disk->write(block.inode[inode_line].indirect, aux.data);			
+		}
+
+		disk->write(inode_block, block.data);
+		disk->read(pointer, aux.data);
+		blocks_content += aux.data;
 	}
 
+	// Escrever em todos os blocos que serão modificados
 	string aux(data);
 	blocks_content.replace(offset % Disk::DISK_BLOCK_SIZE, aux.size(), aux);
 
-	for (int i = start_pointer_block; i < end_pointer_block + 1; i++) {
-		string aux = blocks_content.substr((i - start_pointer_block) * Disk::DISK_BLOCK_SIZE, (i - start_pointer_block + 1) * Disk::DISK_BLOCK_SIZE);
-		union fs_block block = fs_set_content_block(i, aux.c_str());
+	// Assume-se que os blocos estão alocados já, então apenas escreve neles
+	for (int i = start_block_pointer; i < end_block_pointer + 1; i++) {
+		fs_block block, aux;
+		int pointer;
+		disk->read(inode_block, block.data);
+
+		if (i < 5) {
+			pointer = block.inode[inode_line].direct[i];
+		} else {
+			disk->read(block.inode[inode_line].indirect, aux.data);
+			pointer = aux.pointers[i - 5];
+		}
+
+		disk->write(pointer, blocks_content.substr(i * Disk::DISK_BLOCK_SIZE, (i + 1) * Disk::DISK_BLOCK_SIZE).c_str());
+
 	}
 	
-	return 0;
+	return length;
 }
 
 int INE5412_FS::fs_check_inumber(int inumber) {
@@ -315,12 +377,16 @@ int INE5412_FS::fs_get_inode_line(int inumber) {
 	return inumber % INODES_PER_BLOCK;
 }
 
-union fs_block INE5412_FS::fs_get_content_block(int n_pointer_to_block) {
-	
-}
+int INE5412_FS::fs_allocate_block() {
+	fs_block block;
+	disk->read(0, block.data);
 
-void INE5412_FS::fs_set_content_block(int n_pointer_to_block, char *data) {
-	if (n_pointer_to_block <= 5) } {
-		disk->read()
+	for (int i = block.super.ninodeblocks + 1; i < free_block_bitmap.size(); i++) {
+		if (free_block_bitmap[i] == 0) {
+			free_block_bitmap[i] = 1;
+			return i;
+		}
 	}
+
+	return 0;
 }

@@ -69,8 +69,7 @@ private:
     int fs_get_inode_block(int inumber);
     int fs_get_inode_line(int inumber);
 
-    union fs_block fs_get_content_block(int n_pointer_to_block);
-    void fs_set_content_block(int n_pointer_to_block, char *data);
+    int fs_allocate_block();
 
 };
 
