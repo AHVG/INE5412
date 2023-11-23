@@ -41,9 +41,7 @@ public:
 
 public:
 
-    INE5412_FS(Disk *d) {
-        disk = d;
-    } 
+    INE5412_FS(Disk *d);
 
     void fs_debug();
     int  fs_format();

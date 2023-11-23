@@ -3,6 +3,11 @@
 #include <cmath>
 
 
+INE5412_FS::INE5412_FS(Disk *d) {
+	disk = d;
+	fs_mount();
+}
+
 int INE5412_FS::fs_format()
 {
 	union fs_block block;
@@ -43,7 +48,7 @@ void INE5412_FS::fs_debug()
 		if(!aux.inode[inode_line].isvalid)
 			continue;
 
-		cout << "inode " << i-1 << ":\n";
+		cout << "inode " << i << ":\n";
 		cout << "    size: " << aux.inode[inode_line].size << " bytes\n";
 		cout << "    direct blocks:";
 
@@ -74,6 +79,9 @@ int INE5412_FS::fs_mount()
 
 	if(block.super.magic != FS_MAGIC)
 		return 0;
+
+
+	cout << "Debug: fs_mount" << endl;
 
 	for (int i = 0; i < disk->size(); i++)
 		free_block_bitmap.push_back(0);
@@ -273,6 +281,8 @@ int INE5412_FS::fs_write(int inumber, const char *data, int length, int offset)
 	if (BYTES_PER_INODE <= offset + length)
 		length = BYTES_PER_INODE - offset;
 
+	cout << "Debug: fs_write" << endl;
+
 	// Temos 5 ponteiros diretos e um indireto, o qual equivale a 1024 diretos
 	// Assim start_pointer_block pode assumir um valor entre 0 a 1028 (1024 + 5 - 1), inclusos
 	// O end_pointer_block também pode assumir um valor entre 0 a 1028, inclusos
@@ -335,6 +345,9 @@ int INE5412_FS::fs_write(int inumber, const char *data, int length, int offset)
 	string aux(data);
 	blocks_content.replace(offset % Disk::DISK_BLOCK_SIZE, aux.size(), aux);
 
+	cout << "Debug: fs_write depois de ler da memoria" << endl;
+
+
 	// Assume-se que os blocos estão alocados já, então apenas escreve neles
 	for (int i = start_block_pointer; i < end_block_pointer + 1; i++) {
 		fs_block block, aux;
@@ -355,6 +368,7 @@ int INE5412_FS::fs_write(int inumber, const char *data, int length, int offset)
 	fs_block block;
 	disk->read(inode_block, block.data);
 	block.inode[inode_line].size += length;
+	block.inode[inode_line].isvalid = 1;
 	disk->write(inode_block, block.data);
 	
 	return length;
@@ -395,6 +409,9 @@ int INE5412_FS::fs_allocate_block() {
 			return i;
 		}
 	}
+
+	cout << "Debug: fs_allocate_block" << endl;
+	cout << free_block_bitmap.size() << endl;
 
 	return 0;
 }
