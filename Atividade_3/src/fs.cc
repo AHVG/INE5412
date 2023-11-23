@@ -80,44 +80,44 @@ int INE5412_FS::fs_mount()
 	if(block.super.magic != FS_MAGIC)
 		return 0;
 
-
-	cout << "Debug: fs_mount" << endl;
-
 	for (int i = 0; i < disk->size(); i++)
 		free_block_bitmap.push_back(0);
 
-	for (int i = 1; i < block.super.ninodeblocks + 1; i++) {
+	for (int i = 1; i < block.super.ninodes; i++) {
 		union fs_block aux;
-		disk->read(i, aux.data);
-		
-		// Para o caso de o inode não estiver sendo usado
-		if (!aux.inode->isvalid)
+		int inode_block = fs_get_inode_block(i);
+		int inode_line = fs_get_inode_line(i);
+
+		disk->read(inode_block, aux.data);
+
+		if(!aux.inode[inode_line].isvalid)
 			continue;
 
 		for (int j = 0; j < POINTERS_PER_INODE; j++) {
-			if (fs_check_numblock(aux.inode->direct[j])) {
-				free_block_bitmap[aux.inode->direct[j]] = 1;
-			} else {
-				return 0;
+			if (fs_check_numblock(aux.inode[inode_line].direct[j])) {
+				free_block_bitmap[aux.inode[inode_line].direct[j]] = 1;
 			}
 		}
 
 		// Para o caso de o inode não ter bloco indireto
-		if (!aux.inode->indirect)
+		if (!aux.inode[inode_line].indirect)
 			continue;
 
-		disk->read(aux.inode->indirect, aux.data);
+		free_block_bitmap[aux.inode[inode_line].indirect] = 1;
+		disk->read(aux.inode[inode_line].indirect, aux.data);
 
 		for (int j = 0; j < POINTERS_PER_BLOCK; j++) {
 			if (fs_check_numblock(aux.pointers[j])) {
 				free_block_bitmap[aux.pointers[j]] = 1;
-			} else {
-				return 0;
 			}
 		}
 
 	}
 
+	for (int i = block.super.ninodeblocks + 1; i < block.super.nblocks + 1; i++)
+		cout << free_block_bitmap[i] << " ";
+
+	cout << endl;
 
 	return 1;
 }
@@ -281,8 +281,6 @@ int INE5412_FS::fs_write(int inumber, const char *data, int length, int offset)
 	if (BYTES_PER_INODE <= offset + length)
 		length = BYTES_PER_INODE - offset;
 
-	cout << "Debug: fs_write" << endl;
-
 	// Temos 5 ponteiros diretos e um indireto, o qual equivale a 1024 diretos
 	// Assim start_pointer_block pode assumir um valor entre 0 a 1028 (1024 + 5 - 1), inclusos
 	// O end_pointer_block também pode assumir um valor entre 0 a 1028, inclusos
@@ -344,9 +342,6 @@ int INE5412_FS::fs_write(int inumber, const char *data, int length, int offset)
 	// Escrever em todos os blocos que serão modificados
 	string aux(data);
 	blocks_content.replace(offset % Disk::DISK_BLOCK_SIZE, aux.size(), aux);
-
-	cout << "Debug: fs_write depois de ler da memoria" << endl;
-
 
 	// Assume-se que os blocos estão alocados já, então apenas escreve neles
 	for (int i = start_block_pointer; i < end_block_pointer + 1; i++) {
@@ -410,7 +405,6 @@ int INE5412_FS::fs_allocate_block() {
 		}
 	}
 
-	cout << "Debug: fs_allocate_block" << endl;
 	cout << free_block_bitmap.size() << endl;
 
 	return 0;
