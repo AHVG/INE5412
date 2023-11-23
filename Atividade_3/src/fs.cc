@@ -264,6 +264,9 @@ int INE5412_FS::fs_read(int inumber, char *data, int length, int offset)
 int INE5412_FS::fs_write(int inumber, const char *data, int length, int offset)
 {
 
+	if(!fs_check_inumber(inumber))
+		return 0;
+
 	if (BYTES_PER_INODE <= offset)
 		return 0;
 
@@ -348,6 +351,11 @@ int INE5412_FS::fs_write(int inumber, const char *data, int length, int offset)
 		disk->write(pointer, blocks_content.substr(i * Disk::DISK_BLOCK_SIZE, (i + 1) * Disk::DISK_BLOCK_SIZE).c_str());
 
 	}
+
+	fs_block block;
+	disk->read(inode_block, block.data);
+	block.inode[inode_line].size += length;
+	disk->write(inode_block, block.data);
 	
 	return length;
 }
@@ -381,7 +389,7 @@ int INE5412_FS::fs_allocate_block() {
 	fs_block block;
 	disk->read(0, block.data);
 
-	for (int i = block.super.ninodeblocks + 1; i < free_block_bitmap.size(); i++) {
+	for (long unsigned int i = block.super.ninodeblocks + 1; i < free_block_bitmap.size(); i++) {
 		if (free_block_bitmap[i] == 0) {
 			free_block_bitmap[i] = 1;
 			return i;
