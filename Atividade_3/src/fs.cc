@@ -400,6 +400,8 @@ int INE5412_FS::fs_allocate_block() {
 
 	for (long unsigned int i = block.super.ninodeblocks + 1; i < free_block_bitmap.size(); i++) {
 		if (free_block_bitmap[i] == 0) {
+			char data[Disk::DISK_BLOCK_SIZE] = {0};
+			disk->write(i, data);
 			free_block_bitmap[i] = 1;
 			return i;
 		}
