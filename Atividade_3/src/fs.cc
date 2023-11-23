@@ -3,6 +3,11 @@
 #include <cmath>
 
 
+INE5412_FS::INE5412_FS(Disk *d) {
+	disk = d;
+	fs_mount();
+}
+
 int INE5412_FS::fs_format()
 {
 	union fs_block block;
@@ -43,7 +48,7 @@ void INE5412_FS::fs_debug()
 		if(!aux.inode[inode_line].isvalid)
 			continue;
 
-		cout << "inode " << i-1 << ":\n";
+		cout << "inode " << i << ":\n";
 		cout << "    size: " << aux.inode[inode_line].size << " bytes\n";
 		cout << "    direct blocks:";
 
@@ -78,38 +83,41 @@ int INE5412_FS::fs_mount()
 	for (int i = 0; i < disk->size(); i++)
 		free_block_bitmap.push_back(0);
 
-	for (int i = 1; i < block.super.ninodeblocks + 1; i++) {
+	for (int i = 1; i < block.super.ninodes; i++) {
 		union fs_block aux;
-		disk->read(i, aux.data);
-		
-		// Para o caso de o inode não estiver sendo usado
-		if (!aux.inode->isvalid)
+		int inode_block = fs_get_inode_block(i);
+		int inode_line = fs_get_inode_line(i);
+
+		disk->read(inode_block, aux.data);
+
+		if(!aux.inode[inode_line].isvalid)
 			continue;
 
 		for (int j = 0; j < POINTERS_PER_INODE; j++) {
-			if (fs_check_numblock(aux.inode->direct[j])) {
-				free_block_bitmap[aux.inode->direct[j]] = 1;
-			} else {
-				return 0;
+			if (fs_check_numblock(aux.inode[inode_line].direct[j])) {
+				free_block_bitmap[aux.inode[inode_line].direct[j]] = 1;
 			}
 		}
 
 		// Para o caso de o inode não ter bloco indireto
-		if (!aux.inode->indirect)
+		if (!aux.inode[inode_line].indirect)
 			continue;
 
-		disk->read(aux.inode->indirect, aux.data);
+		free_block_bitmap[aux.inode[inode_line].indirect] = 1;
+		disk->read(aux.inode[inode_line].indirect, aux.data);
 
 		for (int j = 0; j < POINTERS_PER_BLOCK; j++) {
 			if (fs_check_numblock(aux.pointers[j])) {
 				free_block_bitmap[aux.pointers[j]] = 1;
-			} else {
-				return 0;
 			}
 		}
 
 	}
 
+	for (int i = block.super.ninodeblocks + 1; i < block.super.nblocks + 1; i++)
+		cout << free_block_bitmap[i] << " ";
+
+	cout << endl;
 
 	return 1;
 }
@@ -263,7 +271,102 @@ int INE5412_FS::fs_read(int inumber, char *data, int length, int offset)
 
 int INE5412_FS::fs_write(int inumber, const char *data, int length, int offset)
 {
-	return 0;
+
+	if(!fs_check_inumber(inumber))
+		return 0;
+
+	if (BYTES_PER_INODE <= offset)
+		return 0;
+
+	if (BYTES_PER_INODE <= offset + length)
+		length = BYTES_PER_INODE - offset;
+
+	// Temos 5 ponteiros diretos e um indireto, o qual equivale a 1024 diretos
+	// Assim start_pointer_block pode assumir um valor entre 0 a 1028 (1024 + 5 - 1), inclusos
+	// O end_pointer_block também pode assumir um valor entre 0 a 1028, inclusos
+	// Se start_block_pointer tiver valor de 0 a 4, então ele vai ter que pegar blocos
+	// apontados pelos ponteiros diretos
+	int start_block_pointer = offset / Disk::DISK_BLOCK_SIZE;
+	int end_block_pointer = (length + offset - 1) / Disk::DISK_BLOCK_SIZE;
+
+	int inode_block = fs_get_inode_block(inumber);
+	int inode_line = fs_get_inode_line(inumber);
+
+	// Ler todos os blocos que serão modificados
+	string blocks_content = "";
+	
+	// Faz a leitura dos blocos e, se ele não existir, aloca memória para isso. Se não for possível alocar, retorna erro
+	for (int i = start_block_pointer; i < end_block_pointer + 1; i++) {
+		fs_block block, aux;
+		int pointer = 0;
+		
+		disk->read(inode_block, block.data);
+
+		if (i < 5) {
+			pointer = block.inode[inode_line].direct[i];
+			
+			if (pointer == 0)
+				pointer = fs_allocate_block();
+			
+			if (pointer == 0)
+				return 0;
+			
+			block.inode[inode_line].direct[i] = pointer;
+
+		} else {
+
+			if (block.inode[inode_line].indirect == 0)
+				block.inode[inode_line].indirect = fs_allocate_block();
+
+			if (block.inode[inode_line].indirect == 0)
+				return 0;
+			
+			disk->read(block.inode[inode_line].indirect, aux.data);
+			pointer = aux.pointers[i - 5];
+
+			if (pointer == 0)
+				pointer = fs_allocate_block();
+			
+			if (pointer == 0)
+				return 0;
+
+			aux.pointers[i - 5] = pointer;
+			disk->write(block.inode[inode_line].indirect, aux.data);			
+		}
+
+		disk->write(inode_block, block.data);
+		disk->read(pointer, aux.data);
+		blocks_content += aux.data;
+	}
+
+	// Escrever em todos os blocos que serão modificados
+	string aux(data);
+	blocks_content.replace(offset % Disk::DISK_BLOCK_SIZE, aux.size(), aux);
+
+	// Assume-se que os blocos estão alocados já, então apenas escreve neles
+	for (int i = start_block_pointer; i < end_block_pointer + 1; i++) {
+		fs_block block, aux;
+		int pointer;
+		disk->read(inode_block, block.data);
+
+		if (i < 5) {
+			pointer = block.inode[inode_line].direct[i];
+		} else {
+			disk->read(block.inode[inode_line].indirect, aux.data);
+			pointer = aux.pointers[i - 5];
+		}
+
+		disk->write(pointer, blocks_content.substr(i * Disk::DISK_BLOCK_SIZE, (i + 1) * Disk::DISK_BLOCK_SIZE).c_str());
+
+	}
+
+	fs_block block;
+	disk->read(inode_block, block.data);
+	block.inode[inode_line].size += length;
+	block.inode[inode_line].isvalid = 1;
+	disk->write(inode_block, block.data);
+	
+	return length;
 }
 
 int INE5412_FS::fs_check_inumber(int inumber) {
@@ -289,4 +392,20 @@ int INE5412_FS::fs_get_inode_block(int inumber) {
 int INE5412_FS::fs_get_inode_line(int inumber) {
 	inumber--;
 	return inumber % INODES_PER_BLOCK;
+}
+
+int INE5412_FS::fs_allocate_block() {
+	fs_block block;
+	disk->read(0, block.data);
+
+	for (long unsigned int i = block.super.ninodeblocks + 1; i < free_block_bitmap.size(); i++) {
+		if (free_block_bitmap[i] == 0) {
+			free_block_bitmap[i] = 1;
+			return i;
+		}
+	}
+
+	cout << free_block_bitmap.size() << endl;
+
+	return 0;
 }
