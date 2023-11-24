@@ -272,9 +272,13 @@ int INE5412_FS::fs_read(int inumber, char *data, int length, int offset)
 
 int INE5412_FS::fs_write(int inumber, const char *data, int length, int offset)
 {
-	// TODO: usar load inode e save inode
+	union fs_block super, block;
+	fs_inode inode;
+	string blocks_content = "";
+	string aux(data);
+	disk->read(0, super.data);
 
-	if(!fs_check_inumber(inumber) || !mounted || BYTES_PER_INODE <= offset)
+	if(!fs_inode_load(inumber, &inode) || !mounted || BYTES_PER_INODE <= offset || super.super.magic != FS_MAGIC)
 		return 0;
 
 	if (BYTES_PER_INODE <= offset + length)
@@ -287,21 +291,13 @@ int INE5412_FS::fs_write(int inumber, const char *data, int length, int offset)
 	// apontados pelos ponteiros diretos
 	int start_block_pointer = offset / Disk::DISK_BLOCK_SIZE;
 	int end_block_pointer = (length + offset - 1) / Disk::DISK_BLOCK_SIZE;
-
-	int inode_block = fs_get_inode_block(inumber);
-	int inode_line = fs_get_inode_line(inumber);
-
-	string blocks_content = "", aux(data);
 	
 	// Faz a leitura dos blocos e, se ele não existir, aloca memória para isso. Se não for possível alocar, retorna erro
 	for (int i = start_block_pointer; i < end_block_pointer + 1; i++) {
-		fs_block block, aux;
 		int pointer = 0;
-		
-		disk->read(inode_block, block.data);
 
 		if (i < 5) {
-			pointer = block.inode[inode_line].direct[i];
+			pointer = inode.direct[i];
 			
 			// Se não está alocado o ponteiro direto, aloca
 			if (pointer == 0)
@@ -312,21 +308,21 @@ int INE5412_FS::fs_write(int inumber, const char *data, int length, int offset)
 				return 0;
 			
 			// Define o ponteiro direto alocado
-			block.inode[inode_line].direct[i] = pointer;
+			inode.direct[i] = pointer;
 
 		} else {
 
 			// Se não está alocado o ponteiro indireto, aloca
-			if (block.inode[inode_line].indirect == 0)
-				block.inode[inode_line].indirect = fs_allocate_block();
+			if (inode.indirect == 0)
+				inode.indirect = fs_allocate_block();
 
 			// Se não conseguiu alocar, então retorna zero
-			if (block.inode[inode_line].indirect == 0)
+			if (inode.indirect == 0)
 				return 0;
 			
 			// Carrega bloco do indireto
-			disk->read(block.inode[inode_line].indirect, aux.data);
-			pointer = aux.pointers[i - 5];
+			disk->read(inode.indirect, block.data);
+			pointer = block.pointers[i - 5];
 
 			// Se não está alocado o ponteiro do bloco indireto, então aloca
 			if (pointer == 0)
@@ -337,16 +333,17 @@ int INE5412_FS::fs_write(int inumber, const char *data, int length, int offset)
 				return 0;
 
 			// Escreve em disco a modificação do bloco indireto
-			aux.pointers[i - 5] = pointer;
-			disk->write(block.inode[inode_line].indirect, aux.data);			
+			block.pointers[i - 5] = pointer;
+			disk->write(inode.indirect, block.data);			
 		}
 
 		// Escreve em disco as mudanças feitas no inode
-		disk->write(inode_block, block.data);
+		if (fs_inode_save(inumber, &inode))
+			return 0;
 
 		// Lê o conteudo do bloco que será modificado
-		disk->read(pointer, aux.data);
-		blocks_content += aux.data;
+		disk->read(pointer, block.data);
+		blocks_content += block.data;
 	}
 
 	// Escrevendo em cima do conteudo dos blocos
@@ -355,16 +352,14 @@ int INE5412_FS::fs_write(int inumber, const char *data, int length, int offset)
 	// Escreve em disco as modificações nos blocos 
 	// (muito similar ao for de cima, só que assumindo que tudo está alocado)
 	for (int i = start_block_pointer; i < end_block_pointer + 1; i++) {
-		fs_block block, aux;
 		int pointer;
-		disk->read(inode_block, block.data);
 
 		// If para ver se o bloco está sendo apontado por um ponteiro direto ou indireto
 		if (i < 5) {
-			pointer = block.inode[inode_line].direct[i];
+			pointer = inode.direct[i];
 		} else {
-			disk->read(block.inode[inode_line].indirect, aux.data);
-			pointer = aux.pointers[i - 5];
+			disk->read(inode.indirect, block.data);
+			pointer = block.pointers[i - 5];
 		}
 
 		// Escreve o conteudo do bloco modificaod em disco
@@ -372,11 +367,10 @@ int INE5412_FS::fs_write(int inumber, const char *data, int length, int offset)
 	}
 
 	// Escrevendo em disco as modificações do inode
-	fs_block block;
-	disk->read(inode_block, block.data);
-	block.inode[inode_line].size += length;
-	block.inode[inode_line].isvalid = 1;
-	disk->write(inode_block, block.data);
+	inode.size += length;
+	inode.isvalid = 1;
+	if (!fs_inode_save(inumber, &inode))
+		return 0;
 	
 	return length;
 }
