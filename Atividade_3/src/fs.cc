@@ -186,6 +186,8 @@ int INE5412_FS::fs_delete(int inumber)
 				return 0;
 			}
 		}
+
+		free_block_bitmap[block.inode[inode_line].indirect] = 0;
 	}
 
 	disk->write(inode_block, block.data);
