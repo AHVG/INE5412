@@ -51,20 +51,23 @@ public:
 
     int  fs_read(int inumber, char *data, int length, int offset);
     int  fs_write(int inumber, const char *data, int length, int offset);
-    int mounted;
 
 private:
 
     Disk *disk;
     vector<int> free_block_bitmap;
+    int mounted;
 
     int fs_check_inumber(int inumber);
     int fs_check_numblock(int blocknum);
 
+    int fs_allocate_block();
+
     int fs_get_inode_block(int inumber);
     int fs_get_inode_line(int inumber);
 
-    int fs_allocate_block();
+    int fs_inode_load( int inumber, fs_inode *inode );
+    int fs_inode_save( int inumber, fs_inode *inode );
 
 };
 
