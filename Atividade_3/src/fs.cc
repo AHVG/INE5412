@@ -5,16 +5,23 @@
 
 INE5412_FS::INE5412_FS(Disk *d) {
 	disk = d;
-	fs_mount();
+	mounted = 0;
 }
 
 int INE5412_FS::fs_format()
 {
+	if(mounted) return 0;
+
 	union fs_block block;
 	char data[Disk::DISK_BLOCK_SIZE] = {0};
 
 	for(int i = 0; i < disk->size(); i++)
 		disk->write(i, data);
+
+	free_block_bitmap.clear();
+
+	for (int i = 0; i < disk->size(); i++)
+		free_block_bitmap.push_back(0);
 
 	block.super.magic = FS_MAGIC;
 	block.super.nblocks = disk->size();
@@ -74,11 +81,18 @@ void INE5412_FS::fs_debug()
 
 int INE5412_FS::fs_mount()
 {
+	if(mounted) return 0;
+	mounted = 1;
+
 	union fs_block block;
 	disk->read(0, block.data);
 
+	
+
 	if(block.super.magic != FS_MAGIC)
 		return 0;
+
+	free_block_bitmap.clear();
 
 	for (int i = 0; i < disk->size(); i++)
 		free_block_bitmap.push_back(0);
@@ -114,9 +128,6 @@ int INE5412_FS::fs_mount()
 
 	}
 
-	for (int i = block.super.ninodeblocks + 1; i < block.super.nblocks + 1; i++)
-		cout << free_block_bitmap[i] << " ";
-
 	cout << endl;
 
 	return 1;
@@ -124,6 +135,7 @@ int INE5412_FS::fs_mount()
 
 int INE5412_FS::fs_create()
 {
+	if(!mounted) return 0;
 	union fs_block block;
 	disk->read(0, block.data);
 
@@ -158,7 +170,7 @@ int INE5412_FS::fs_create()
 
 int INE5412_FS::fs_delete(int inumber)
 {
-	if (!fs_check_inumber(inumber))
+	if (!fs_check_inumber(inumber) || !mounted)
 		return 0;
 
 	union fs_block block, super;
@@ -196,7 +208,7 @@ int INE5412_FS::fs_delete(int inumber)
 
 int INE5412_FS::fs_getsize(int inumber)
 {
-	if (!fs_check_inumber(inumber))
+	if (!fs_check_inumber(inumber) || !mounted)
 		return -1;
 
 	union fs_block block;
@@ -210,7 +222,7 @@ int INE5412_FS::fs_getsize(int inumber)
 
 int INE5412_FS::fs_read(int inumber, char *data, int length, int offset)
 {
-	if(!fs_check_inumber(inumber))
+	if(!fs_check_inumber(inumber) || !mounted)
 		return 0;
 
 	union fs_block block;
@@ -274,10 +286,7 @@ int INE5412_FS::fs_read(int inumber, char *data, int length, int offset)
 int INE5412_FS::fs_write(int inumber, const char *data, int length, int offset)
 {
 
-	if(!fs_check_inumber(inumber))
-		return 0;
-
-	if (BYTES_PER_INODE <= offset)
+	if(!fs_check_inumber(inumber) || !mounted || BYTES_PER_INODE <= offset)
 		return 0;
 
 	if (BYTES_PER_INODE <= offset + length)

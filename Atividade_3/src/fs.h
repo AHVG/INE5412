@@ -39,8 +39,6 @@ public:
             char data[Disk::DISK_BLOCK_SIZE];
     };
 
-public:
-
     INE5412_FS(Disk *d);
 
     void fs_debug();
@@ -53,13 +51,12 @@ public:
 
     int  fs_read(int inumber, char *data, int length, int offset);
     int  fs_write(int inumber, const char *data, int length, int offset);
+    int mounted;
 
 private:
 
     Disk *disk;
     vector<int> free_block_bitmap;
-
-private:
 
     int fs_check_inumber(int inumber);
     int fs_check_numblock(int blocknum);
