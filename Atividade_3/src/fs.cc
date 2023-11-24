@@ -338,7 +338,7 @@ int INE5412_FS::fs_write(int inumber, const char *data, int length, int offset)
 		}
 
 		// Escreve em disco as mudanças feitas no inode
-		if (fs_inode_save(inumber, &inode))
+		if (!fs_inode_save(inumber, &inode))
 			return 0;
 
 		// Lê o conteudo do bloco que será modificado
@@ -367,7 +367,8 @@ int INE5412_FS::fs_write(int inumber, const char *data, int length, int offset)
 	}
 
 	// Escrevendo em disco as modificações do inode
-	inode.size += length;
+	if (inode.size < offset + length)
+		inode.size = offset + length;
 	inode.isvalid = 1;
 	if (!fs_inode_save(inumber, &inode))
 		return 0;
