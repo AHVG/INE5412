@@ -178,7 +178,8 @@ int INE5412_FS::fs_delete(int inumber)
 
 	// Desocupando inode
 	inode.isvalid = 0;
-	
+	inode.size = 0;
+
 	// Desalocando blocos usados pelo inode por meio dos ponteiros diretos
 	for(int i = 0; i < POINTERS_PER_INODE; i++)
 		if (fs_check_numblock(inode.direct[i]))
