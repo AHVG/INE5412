@@ -377,7 +377,8 @@ int INE5412_FS::fs_write(int inumber, const char *data, int length, int offset)
 		}
 
 		// Escreve o conteudo do bloco modificaod em disco
-		disk->write(pointer, blocks_content.substr(i * Disk::DISK_BLOCK_SIZE, (i + 1) * Disk::DISK_BLOCK_SIZE).c_str());
+		disk->write(pointer, blocks_content.substr((i - start_block_pointer) * Disk::DISK_BLOCK_SIZE,
+		 (i + 1 - start_block_pointer) * Disk::DISK_BLOCK_SIZE).c_str());
 	}
 
 	// Escrevendo em disco as modificações do inode
