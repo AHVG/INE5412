@@ -173,7 +173,7 @@ int INE5412_FS::fs_delete(int inumber)
 	disk->read(0, super.data);
 
 	// Verificando se já não foi montado e se o número mágico é válido
-	if (!fs_inode_load(inumber, &inode) || !mounted || block.super.magic != FS_MAGIC)
+	if (!fs_inode_load(inumber, &inode) || !mounted || super.super.magic != FS_MAGIC)
 		return 0;
 
 	// Desocupando inode
@@ -219,33 +219,46 @@ int INE5412_FS::fs_read(int inumber, char *data, int length, int offset)
 	fs_inode inode;
 	
 	if(!fs_inode_load(inumber, &inode) || !mounted) return 0;
-
+	
 	int size = inode.size;
-
+	// Verificando se o offset é maior que o tamanho do arquivo, se sim as chamadas da função terminam
 	if(offset >= size) return 0;
 
+	// Pegando nosso bloco inicial
 	int block_offset = offset / Disk::DISK_BLOCK_SIZE;
 
+	// Contador para jogar os dados no data
 	int destination_offset = 0;
-	int aux_offset = offset; int aux_length = length + offset;
+	// Variavel para controlar quantos bytes ja foram copiados
+	int aux_offset = offset; 
+	// Variavel para controlar para controlar o numero de bytes para copiar naquela chamada de funcao
+	int aux_length = length + offset;
+	// Variavel para controlar quantos bytes devem ser copiados
 	int bytes_to_copy = Disk::DISK_BLOCK_SIZE;
 
 	for(int i = block_offset; i < POINTERS_PER_INODE; ++i){
+		// Variavel para controlar o bloco atual
 		int current_block = inode.direct[i];
+		// Se acaso nao tiver mais blocos para ler, termina a funcao
 		if(current_block <= 0) break;
 
 		union fs_block aux;
+		// Lendo o bloco atual
 		disk->read(current_block, aux.data);
+		// Incrementando o aux_offset com o valor de bytes de um bloco
 		aux_offset += Disk::DISK_BLOCK_SIZE;
-
+		// Caso o aux_offset extrapolou a quantidade de bytes para serem lidos nessa chamada de funcao, faz um early return
 		if(aux_offset > aux_length) return length;
+		// Caso o aux_offset extrapolou a quantidade de bytes do arquivo, entao copia apenas o que falta
 		if(aux_offset > size) bytes_to_copy = size % Disk::DISK_BLOCK_SIZE;
-		
+		// Copiando os bytes para o data
 		for(int j = 0; j < bytes_to_copy; ++j) data[destination_offset++] = aux.data[j];
 		
 	}
-
+	// Atualizando bytes to copy para o valor de um bloco
+	// pois agora vamos ler os blocos indiretos
 	bytes_to_copy = Disk::DISK_BLOCK_SIZE;
+	// Atualizando o bloco offset para o bloco respectivo dos indiretos
 	block_offset = (aux_offset / Disk::DISK_BLOCK_SIZE) - POINTERS_PER_INODE;
 
 	if(inode.indirect){
@@ -265,7 +278,7 @@ int INE5412_FS::fs_read(int inumber, char *data, int length, int offset)
 			
 			}
 	}
-	
+	// Caso o offset + length seja maior que o tamanho do arquivo, retorna o tamanho do arquivo - offset(o length para aquela chamada de funcão)
 	if(length + offset > size) return size - offset;
 
 	return length;
@@ -297,7 +310,7 @@ int INE5412_FS::fs_write(int inumber, const char *data, int length, int offset)
 	for (int i = start_block_pointer; i < end_block_pointer + 1; i++) {
 		int pointer = 0;
 
-		if (i < 5) {
+		if (i < POINTERS_PER_INODE) {
 			pointer = inode.direct[i];
 			
 			// Se não está alocado o ponteiro direto, aloca
@@ -356,7 +369,7 @@ int INE5412_FS::fs_write(int inumber, const char *data, int length, int offset)
 		int pointer;
 
 		// If para ver se o bloco está sendo apontado por um ponteiro direto ou indireto
-		if (i < 5) {
+		if (i < POINTERS_PER_INODE) {
 			pointer = inode.direct[i];
 		} else {
 			disk->read(inode.indirect, block.data);
@@ -370,6 +383,7 @@ int INE5412_FS::fs_write(int inumber, const char *data, int length, int offset)
 	// Escrevendo em disco as modificações do inode
 	if (inode.size < offset + length)
 		inode.size = offset + length;
+	
 	inode.isvalid = 1;
 	if (!fs_inode_save(inumber, &inode))
 		return 0;
