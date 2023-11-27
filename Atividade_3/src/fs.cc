@@ -350,7 +350,7 @@ int INE5412_FS::fs_write(int inumber, const char *data, int length, int offset)
 				return 0;
 
 			// Escreve em disco a modificação do bloco indireto
-			block.pointers[i - 5] = pointer;
+			block.pointers[i - POINTERS_PER_INODE] = pointer;
 			disk->write(inode.indirect, block.data);			
 		}
 
@@ -377,7 +377,7 @@ int INE5412_FS::fs_write(int inumber, const char *data, int length, int offset)
 			pointer = inode.direct[i];
 		} else {
 			disk->read(inode.indirect, block.data);
-			pointer = block.pointers[i - 5];
+			pointer = block.pointers[i - POINTERS_PER_INODE];
 		}
 
 		// Escreve o conteudo do bloco modificaod em disco
