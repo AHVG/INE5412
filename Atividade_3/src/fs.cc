@@ -98,6 +98,9 @@ int INE5412_FS::fs_mount()
 	for (int i = 0; i < disk->size(); i++)
 		free_block_bitmap.push_back(0);
 
+	for (int i = 0; i < block.super.ninodeblocks + 1; i++)
+		free_block_bitmap[i] = 1;
+
 	// Vendo quais blocos estão sendo usados pelos inodes
 	for (int i = 1; i < block.super.ninodes; i++) {
 
@@ -286,10 +289,8 @@ int INE5412_FS::fs_read(int inumber, char *data, int length, int offset)
 
 int INE5412_FS::fs_write(int inumber, const char *data, int length, int offset)
 {
-	union fs_block super, block;
+	union fs_block super;
 	fs_inode inode;
-	string blocks_content = "";
-	string aux(data);
 	disk->read(0, super.data);
 
 	if(!fs_inode_load(inumber, &inode) || !mounted || BYTES_PER_INODE <= offset || super.super.magic != FS_MAGIC)
@@ -307,8 +308,10 @@ int INE5412_FS::fs_write(int inumber, const char *data, int length, int offset)
 	int end_block_pointer = (length + offset - 1) / Disk::DISK_BLOCK_SIZE;
 	
 	// Faz a leitura dos blocos e, se ele não existir, aloca memória para isso. Se não for possível alocar, retorna erro
+	std::string blocks_content = "";
 	for (int i = start_block_pointer; i < end_block_pointer + 1; i++) {
 		int pointer = 0;
+		union fs_block block;
 
 		if (i < POINTERS_PER_INODE) {
 			pointer = inode.direct[i];
@@ -361,12 +364,13 @@ int INE5412_FS::fs_write(int inumber, const char *data, int length, int offset)
 	}
 
 	// Escrevendo em cima do conteudo dos blocos
-	blocks_content.replace(offset % Disk::DISK_BLOCK_SIZE, aux.size(), aux);
+	blocks_content.replace(offset % Disk::DISK_BLOCK_SIZE, strlen(data), data);
 
 	// Escreve em disco as modificações nos blocos 
 	// (muito similar ao for de cima, só que assumindo que tudo está alocado)
 	for (int i = start_block_pointer; i < end_block_pointer + 1; i++) {
 		int pointer;
+		union fs_block block;
 
 		// If para ver se o bloco está sendo apontado por um ponteiro direto ou indireto
 		if (i < POINTERS_PER_INODE) {
@@ -377,8 +381,9 @@ int INE5412_FS::fs_write(int inumber, const char *data, int length, int offset)
 		}
 
 		// Escreve o conteudo do bloco modificaod em disco
-		disk->write(pointer, blocks_content.substr((i - start_block_pointer) * Disk::DISK_BLOCK_SIZE,
-		 (i + 1 - start_block_pointer) * Disk::DISK_BLOCK_SIZE).c_str());
+		const char *substring = blocks_content.substr((i - start_block_pointer) * Disk::DISK_BLOCK_SIZE,
+		 (i + 1 - start_block_pointer) * Disk::DISK_BLOCK_SIZE).c_str();
+		disk->write(pointer, substring);
 	}
 
 	// Escrevendo em disco as modificações do inode
