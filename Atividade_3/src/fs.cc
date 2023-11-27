@@ -175,8 +175,8 @@ int INE5412_FS::fs_delete(int inumber)
 	fs_inode inode;
 	disk->read(0, super.data);
 
-	// Verificando se já não foi montado e se o número mágico é válido
-	if (!fs_inode_load(inumber, &inode) || !mounted || super.super.magic != FS_MAGIC)
+	// Verificando se já não foi montado e se o número mágico é válido e se o inode é válido
+	if (!fs_inode_load(inumber, &inode) || !mounted || super.super.magic != FS_MAGIC || !inode.isvalid)
 		return 0;
 
 	// Desocupando inode
